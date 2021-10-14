@@ -1,0 +1,46 @@
+version: "3"
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    volumes:
+      - ./etc-pihole/:/etc/pihole/
+      - ./etc-dnsmasq.d/:/etc/dnsmasq.d/
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80/tcp"
+    environment:
+      # see https://hub.docker.com/r/pihole/pihole
+      ServerIP: 10.0.0.3
+      WEBPASSWORD: ""
+      VIRTUAL_HOST: "http://raspberrypi4.local/"
+      PIHOLE_DNS_: 10.0.0.2#5053;
+    restart: unless-stopped
+    depends_on:
+      - cloudflared
+    networks:
+      pihole_internal:
+        ipv4_address: 10.0.0.3
+
+  cloudflared:
+    container_name: cloudflared
+    image: visibilityspots/cloudflared:alpine-3.12
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      PORT: 5053
+    restart: unless-stopped
+    networks:
+      pihole_internal:
+        ipv4_address: 10.0.0.2
+
+networks:
+  pihole_internal:
+    ipam:
+      config:
+        - subnet: 10.0.0.0/29

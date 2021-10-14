@@ -1,0 +1,181 @@
+- hosts: all
+  tasks:
+    # Allows you to SSH in to the PiHole via SSH, instead of password auth, pulling from your GitHub Public key
+    # This allows me to SSH to my raspberry4, mainly from my MacBook Pro laptop
+    - name: Ensure SSH Key is authorized
+      # Adds or removes an SSH authorized key
+      # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
+      authorized_key:
+        user: pi
+        state: present
+        key: https://github.com/dhlavaty.keys
+
+    # Update system-level dependencies
+    - name: update and upgrade apt packages
+      # activate privilege escalation
+      become: true
+      # Manages apt-packages
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+      apt:
+        upgrade: dist
+        update_cache: true
+
+    # START: My private GitHub SHMU scraper project -----
+    # Generate ssh keypair
+    - name: Ensure deploy key is present
+      # Generate OpenSSH private and public keys
+      # https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html
+      community.crypto.openssh_keypair:
+        path: "~/.ssh/id_rsa"
+        type: ed25519
+      register: ssh_key
+    # If a new deploy key is generated, authorize it in the GitHub shmu-scraper repo.
+    # You need to register GITHUB_TOKEN env variable with GitHub personal
+    # token with "admin:public_key" and "repo" scopes.
+    - name: Ensure deploy key is authorized
+      # Manages deploy keys for GitHub repositories
+      # https://docs.ansible.com/ansible/latest/collections/community/general/github_deploy_key_module.html
+      community.general.github_deploy_key:
+        key: "{{ ssh_key.public_key }}"
+        name: Raspberry Pi4
+        state: present
+        owner: dhlavaty
+        repo: shmu-scraper
+        token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    - name: Clone my private SHMU scraper GitHub repo
+      # Deploy software (or files) from git checkouts
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html
+      ansible.builtin.git:
+        repo: git@github.com:dhlavaty/shmu-scraper.git
+        dest: /home/pi/docker/shmu-scraper/
+        clone: true
+        update: true
+        key_file: ~/.ssh/id_rsa
+        accept_hostkey: true
+    - name: Schedule a cron job to run my script periodically. Creates an entry like "1 21 * * * cd /home/pi/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"
+      ansible.builtin.cron:
+        name: "run shmu-scraper"
+        minute: "1"
+        hour: "21"
+        job: "cd /home/pi/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"
+    # END: My private GitHub SHMU scraper project -----
+
+    # Docker installation
+    - name: Add Docker’s official GPG key
+      become: true
+      # Add or remove an apt key
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+    - name: Add docker "stable" repository to apt
+      become: true
+      # Add and remove APT repositories
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html
+      apt_repository:
+        repo: deb [arch=armhf] https://download.docker.com/linux/debian buster stable
+        state: present
+    - name: Install docker dependencies
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      # see list on https://docs.docker.com/engine/install/debian/
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+    - name: Install Docker Engine
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+    - name: Add user to docker group
+      become: true
+      user:
+        name: pi
+        groups: docker
+        append: true
+    - name: Create directory structure for my Dockers
+      # Manage files and file properties
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+      ansible.builtin.file:
+        path: /home/pi/docker
+        state: directory
+    - name: Enable and Start Docker service
+      become: true
+      # Manage services
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html
+      ansible.builtin.service:
+        name: docker
+        # start on boot
+        enabled: true
+        state: started
+
+    # Automatically upgrade apt packages
+    # The purpose of unattended-upgrades is to keep the computer current with the latest security
+    # (and other) updates automatically
+    - name: Install unattended-upgrades
+      become: true
+      apt:
+        name: unattended-upgrades
+        state: present
+    - name: Setup unattended-upgrades
+      # Configure a .deb package
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/debconf_module.html
+      ansible.builtin.debconf:
+        name: unattended-upgrades
+        question: unattended-upgrades/enable_auto_updates
+        vtype: boolean
+        value: "true"
+
+    # PORTAINER
+    - name: Create directory structure for portainer
+      # Manage files and file properties
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+      ansible.builtin.file:
+        path: /home/pi/docker/portainer
+        state: directory
+    - name: Copy portainer/docker-compose.yaml
+      ansible.builtin.copy:
+        src: docker-compose-portainer.yaml
+        dest: /home/pi/docker/portainer/docker-compose.yaml
+    - name: Run docker-compose with portainer
+      command: /home/pi/.local/bin/docker-compose up -d
+      args:
+        chdir: /home/pi/docker/portainer/
+
+    # PIHOLE
+    - name: Create directory structure for pihole
+      ansible.builtin.file:
+        path: /home/pi/docker/pihole
+        state: directory
+    - name: Copy pihole/docker-compose.yaml
+      ansible.builtin.copy:
+        src: docker-compose-pihole.yaml
+        dest: /home/pi/docker/pihole/docker-compose.yaml
+    - name: Run docker-compose with pihole
+      command: /home/pi/.local/bin/docker-compose up -d
+      args:
+        chdir: /home/pi/docker/pihole/
+
+    # HOME ASSISTANT
+    - name: Create directory structure for Home Assistant
+      ansible.builtin.file:
+        path: /home/pi/docker/homeassistant
+        state: directory
+    - name: Copy homeassistant/docker-compose.yaml
+      ansible.builtin.copy:
+        src: docker-compose-homeassistant.yaml
+        dest: /home/pi/docker/homeassistant/docker-compose.yaml
+    - name: Run docker-compose with homeassistant
+      command: /home/pi/.local/bin/docker-compose up -d
+      args:
+        chdir: /home/pi/docker/homeassistant/

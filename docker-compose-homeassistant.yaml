@@ -1,0 +1,12 @@
+version: "3"
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: homeassistant/raspberrypi4-homeassistant
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    privileged: true
+    network_mode: host
+    restart: unless-stopped

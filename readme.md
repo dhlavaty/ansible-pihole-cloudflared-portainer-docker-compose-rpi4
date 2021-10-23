@@ -3,7 +3,7 @@
 As I don't want to mess with installing Python and Ansible itself, I decided to run Ansible from a Docker.
 
 ```sh
-dockerbash suckowbiz/ansible-playbook
+dockerbashhere suckowbiz/ansible-playbook
 
 # Now inside container, install additional dependencies:
 > apt install sshpass
@@ -11,7 +11,14 @@ dockerbash suckowbiz/ansible-playbook
 > ansible-galaxy collection install community.general
 ```
 
-`dockerbash` is my zsh alias `alias dockerbash="docker run --rm -i -t --entrypoint=/bin/bash"`
+`dockerbashhere` is my zsh alias/func:
+
+```sh
+function dockerbashhere() {
+    dirname=${PWD##*/}
+    docker run --rm -it --entrypoint=/bin/bash -v `pwd`:/${dirname} -w /${dirname} "$@"
+}
+```
 
 Now, to test my Ansible connection:
 

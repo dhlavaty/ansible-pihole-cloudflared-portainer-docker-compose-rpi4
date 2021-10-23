@@ -2,16 +2,19 @@
 
 As I don't want to mess with installing Python and Ansible itself, I decided to run Ansible from a Docker.
 
-```sh
-dockerbashhere suckowbiz/ansible-playbook
+To build my Ansible image:
 
-# Now inside container, install additional dependencies:
-> apt install sshpass
-> ansible-galaxy collection install community.crypto
-> ansible-galaxy collection install community.general
+```sh
+docker build -f ./myansible.Dockerfile . --tag myansible
 ```
 
-`dockerbashhere` is my zsh alias/func:
+To run it:
+
+```sh
+dockerbashhere myansible
+```
+
+Note: `dockerbashhere` is my zsh alias/func:
 
 ```sh
 function dockerbashhere() {
@@ -20,25 +23,26 @@ function dockerbashhere() {
 }
 ```
 
-Now, to test my Ansible connection:
+Now, to test my Ansible connection (run inside container):
 
 ```sh
 # ping my machine
-> export ANSIBLE_HOST_KEY_CHECKING=False && ansible all -m ping --inventory hosts.yaml --ask-pass
+export ANSIBLE_HOST_KEY_CHECKING=False && ansible all -m ping --inventory hosts.yaml --ask-pass
 ```
 
-To run my playbook
+To run my playbook (run inside container):
 
 ```sh
 # set env variables
-> export ANSIBLE_HOST_KEY_CHECKING=false
-> export ANSIBLE_INVENTORY=hosts.yaml
-> export ANSIBLE_ASK_PASS=true
-# Must contain GitHub personal token with "admin:public_key" and "repo" scopes
-> export GITHUB_TOKEN=ghp_xxx-censored--censored--censored-xxx
+export ANSIBLE_HOST_KEY_CHECKING=false
+export ANSIBLE_INVENTORY=hosts.yaml
+export ANSIBLE_ASK_PASS=true
+# Must contain GitHub's "Personal access token" with "admin:public_key" and "repo" scopes
+# See: https://github.com/settings/tokens
+export GITHUB_TOKEN=ghp_xxx-censored--censored--censored-xxx
 
 # ...now run ansible
-> ansible-playbook playbook.yaml
+ansible-playbook playbook.yaml
 ```
 
 # Links

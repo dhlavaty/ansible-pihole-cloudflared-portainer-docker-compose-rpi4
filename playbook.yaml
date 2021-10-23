@@ -30,8 +30,8 @@
         type: ed25519
       register: ssh_key
     # If a new deploy key is generated, authorize it in the GitHub shmu-scraper repo.
-    # You need to register GITHUB_TOKEN env variable with GitHub personal
-    # token with "admin:public_key" and "repo" scopes.
+    # You need to register GITHUB_TOKEN env variable with GitHub's "Personal access token" 
+    # with "admin:public_key" and "repo" scopes. See: https://github.com/settings/tokens
     - name: Ensure deploy key is authorized
       # Manages deploy keys for GitHub repositories
       # https://docs.ansible.com/ansible/latest/collections/community/general/github_deploy_key_module.html

@@ -1,0 +1,36 @@
+---
+version: "2.1"
+services:
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      # - PUID=1000
+      # - PGID=1000
+      # - TZ=Europe/London
+      # External IP or domain name for docker host. Used in server mode.
+      - SERVERURL=${WIREGUARD_EXTERNAL_SERVER_URL} # optional
+
+      # External port for docker host. Used in server mode.
+      - SERVERPORT=51820 #optional
+
+      # Number of peers to create confs for. Required for server mode.
+      - PEERS=2 #optional
+      - PEERDNS=auto #optional
+      # - INTERNAL_SUBNET=10.13.13.0 #optional
+      # - ALLOWEDIPS=0.0.0.0/0 #optional
+    volumes:
+      # Contains all relevant configuration files
+      - ./config:/config
+
+      # Maps host's modules folder.
+      - /lib/modules:/lib/modules
+    ports:
+      # wireguard port
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped

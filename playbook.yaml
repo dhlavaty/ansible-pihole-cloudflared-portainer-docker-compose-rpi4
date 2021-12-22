@@ -166,16 +166,18 @@
       args:
         chdir: /home/pi/docker/pihole/
 
-    # HOME ASSISTANT
-    - name: Create directory structure for Home Assistant
+    # WIREGUARD
+    - name: Create directory structure for WireGuard
       ansible.builtin.file:
-        path: /home/pi/docker/homeassistant
+        path: /home/pi/docker/wireguard
         state: directory
-    - name: Copy homeassistant/docker-compose.yaml
+    - name: Copy wireguard/docker-compose.yaml
       ansible.builtin.copy:
-        src: docker-compose-homeassistant.yaml
-        dest: /home/pi/docker/homeassistant/docker-compose.yaml
-    - name: Run docker-compose with homeassistant
+        src: docker-compose-wireguard.yaml
+        dest: /home/pi/docker/wireguard/docker-compose.yaml
+    - name: Run docker-compose with wireguard
       command: /home/pi/.local/bin/docker-compose up -d
       args:
-        chdir: /home/pi/docker/homeassistant/
+        chdir: /home/pi/docker/wireguard/
+      environment:
+        WIREGUARD_EXTERNAL_SERVER_URL: "{{ lookup('env', 'WIREGUARD_EXTERNAL_SERVER_URL') }}"

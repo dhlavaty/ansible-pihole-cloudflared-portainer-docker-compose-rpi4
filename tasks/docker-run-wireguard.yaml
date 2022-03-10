@@ -3,30 +3,30 @@
   # Manage files and file properties
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
   ansible.builtin.file:
-    path: /home/pi/docker/wireguard
+    path: "{{ config_dir }}/docker/wireguard"
     state: directory
+    mode: 0755
 
-- name: Copy wireguard/docker-compose.yaml
-  # Copy files to remote locations
-  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
-  ansible.builtin.copy:
+- name: Copy docker-compose-wireguard.yaml
+  # Template a file out to a target host
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+  ansible.builtin.template:
     src: docker-compose-wireguard.yaml
-    dest: /home/pi/docker/wireguard/docker-compose.yaml
+    dest: "{{ config_dir }}/docker/wireguard/docker-compose.yaml"
+    mode: '0640'
 
 - name: Run docker-compose with wireguard
   # Execute commands on targets
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
-  ansible.builtin.command: /home/pi/.local/bin/docker-compose up -d
+  ansible.builtin.command: "{{ config_dir }}/.local/bin/docker-compose up -d"
   args:
-    chdir: /home/pi/docker/wireguard/
-  environment:
-    WIREGUARD_EXTERNAL_SERVER_URL: "{{ lookup('env', 'WIREGUARD_EXTERNAL_SERVER_URL') }}"
+    chdir: "{{ config_dir }}/docker/wireguard/"
   when: wireguard_enable
 
 - name: Stop docker-compose with wireguard
   # Execute commands on targets
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
-  ansible.builtin.command: /home/pi/.local/bin/docker-compose down
+  ansible.builtin.command: "{{ config_dir }}/.local/bin/docker-compose down"
   args:
-    chdir: /home/pi/docker/wireguard/
+    chdir: "{{ config_dir }}/docker/wireguard/"
   when: wireguard_enable == false

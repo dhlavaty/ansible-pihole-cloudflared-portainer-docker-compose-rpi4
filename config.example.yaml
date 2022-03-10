@@ -1,5 +1,5 @@
 # Location where configuration files will be stored. It is usually '/home/pi'
-config_dir: '~'
+config_dir: "~"
 
 # This allows 'pi' user to SSH to raspberry4 without password
 pi_ssh_authorized_keys: https://github.com/dhlavaty.keys
@@ -14,3 +14,6 @@ portainer_enable: false
 pihole_enable: false
 
 wireguard_enable: false
+wireguard_external_server_url: my-own-domain.duckdns.org
+wireguard_peers_number: 1
+wireguard_port: 51820

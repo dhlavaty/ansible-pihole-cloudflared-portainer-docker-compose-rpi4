@@ -70,8 +70,9 @@
   # Manage files and file properties
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
   ansible.builtin.file:
-    path: /home/pi/docker
+    path: "{{ config_dir }}/docker"
     state: directory
+    mode: 0755
 
 - name: Enable and Start Docker service
   become: true

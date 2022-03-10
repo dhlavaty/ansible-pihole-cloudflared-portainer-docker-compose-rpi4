@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 ---
 version: "2.1"
 services:
@@ -12,13 +13,13 @@ services:
       # - PGID=1000
       # - TZ=Europe/London
       # External IP or domain name for docker host. Used in server mode.
-      - SERVERURL=${WIREGUARD_EXTERNAL_SERVER_URL} # optional
+      - SERVERURL={{ wireguard_external_server_url }} # optional
 
       # External port for docker host. Used in server mode.
-      - SERVERPORT=51820 #optional
+      - SERVERPORT={{ wireguard_port }} #optional
 
       # Number of peers to create confs for. Required for server mode.
-      - PEERS=2 #optional
+      - PEERS={{ wireguard_peers_number }} #optional
       - PEERDNS=auto #optional
       # - INTERNAL_SUBNET=10.13.13.0 #optional
       # - ALLOWEDIPS=0.0.0.0/0 #optional
@@ -30,7 +31,7 @@ services:
       - /lib/modules:/lib/modules
     ports:
       # wireguard port
-      - 51820:51820/udp
+      - {{ wireguard_port }}:{{ wireguard_port }}/udp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     restart: unless-stopped

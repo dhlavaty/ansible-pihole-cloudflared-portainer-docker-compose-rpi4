@@ -3,8 +3,9 @@
   # Manage files and file properties
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
   ansible.builtin.file:
-    path: /home/pi/docker/pihole
+    path: "{{ config_dir }}/docker/pihole"
     state: directory
+    mode: 0755
   tags:
     - piholerestart
 
@@ -13,16 +14,16 @@
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
   ansible.builtin.copy:
     src: docker-compose-pihole.yaml
-    dest: /home/pi/docker/pihole/docker-compose.yaml
+    dest: "{{ config_dir }}/docker/pihole/docker-compose.yaml"
   tags:
     - piholerestart
 
 - name: Run docker-compose with pihole
   # Execute commands on targets
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
-  ansible.builtin.command: /home/pi/.local/bin/docker-compose up -d
+  ansible.builtin.command: "{{ config_dir }}/.local/bin/docker-compose up -d"
   args:
-    chdir: /home/pi/docker/pihole/
+    chdir: "{{ config_dir }}/docker/pihole/"
   tags:
     - piholerestart
   when: pihole_enable
@@ -30,9 +31,9 @@
 - name: Stop docker-compose with pihole
   # Execute commands on targets
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
-  ansible.builtin.command: /home/pi/.local/bin/docker-compose down
+  ansible.builtin.command: "{{ config_dir }}/.local/bin/docker-compose down"
   args:
-    chdir: /home/pi/docker/pihole/
+    chdir: "{{ config_dir }}/docker/pihole/"
   tags:
     - piholerestart
   when: pihole_enable == false

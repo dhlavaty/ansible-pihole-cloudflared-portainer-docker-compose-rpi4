@@ -9,12 +9,13 @@
   tags:
     - piholerestart
 
-- name: Copy pihole/docker-compose.yaml
-  # Copy files to remote locations
-  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
-  ansible.builtin.copy:
+- name: Copy docker-compose-pihole.yaml
+  # Template a file out to a target host
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+  ansible.builtin.template:
     src: docker-compose-pihole.yaml
     dest: "{{ config_dir }}/docker/pihole/docker-compose.yaml"
+    mode: '0640'
   tags:
     - piholerestart
 

@@ -1,3 +1,5 @@
+# {{ ansible_managed }}
+---
 version: "3"
 # More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
 services:
@@ -16,8 +18,8 @@ services:
     environment:
       # see https://hub.docker.com/r/pihole/pihole
       ServerIP: 10.0.0.3
-      WEBPASSWORD: ""
-      VIRTUAL_HOST: "http://raspberrypi4.local/"
+      WEBPASSWORD: "{{ pihole_password }}"
+      VIRTUAL_HOST: "{{ pihole_virtual_host }}"
       PIHOLE_DNS_: 10.0.0.2#5053;
       DNSMASQ_USER: root
     restart: unless-stopped

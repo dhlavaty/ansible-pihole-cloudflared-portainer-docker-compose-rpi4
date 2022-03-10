@@ -12,6 +12,8 @@ shmu_scraper_github_token: ghp_xxx-censored--censored--censored-xxx
 portainer_enable: false
 
 pihole_enable: false
+pihole_virtual_host: "http://my-raspberry-pi.local/"
+pihole_password: "abc123"
 
 wireguard_enable: false
 wireguard_external_server_url: my-own-domain.duckdns.org

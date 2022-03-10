@@ -19,6 +19,7 @@ services:
       WEBPASSWORD: ""
       VIRTUAL_HOST: "http://raspberrypi4.local/"
       PIHOLE_DNS_: 10.0.0.2#5053;
+      DNSMASQ_USER: root
     restart: unless-stopped
     depends_on:
       - cloudflared

@@ -1,5 +1,5 @@
 - hosts: all
-  tasks:
+  pre_tasks:
     # Allows you to SSH in to the PiHole via SSH, instead of password auth, pulling from your GitHub Public key
     # This allows me to SSH to my raspberry4, mainly from my MacBook Pro laptop
     - name: Ensure SSH Key is authorized
@@ -16,10 +16,11 @@
       become: true
       # Manages apt-packages
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
-      apt:
+      ansible.builtin.apt:
         upgrade: dist
         update_cache: true
 
+  tasks:
     # START: My private GitHub SHMU scraper project -----
     # Generate ssh keypair
     - name: Ensure deploy key is present
@@ -30,7 +31,7 @@
         type: ed25519
       register: ssh_key
     # If a new deploy key is generated, authorize it in the GitHub shmu-scraper repo.
-    # You need to register GITHUB_TOKEN env variable with GitHub's "Personal access token" 
+    # You need to register GITHUB_TOKEN env variable with GitHub's "Personal access token"
     # with "admin:public_key" and "repo" scopes. See: https://github.com/settings/tokens
     - name: Ensure deploy key is authorized
       # Manages deploy keys for GitHub repositories
@@ -157,14 +158,26 @@
       ansible.builtin.file:
         path: /home/pi/docker/pihole
         state: directory
+      tags:
+        - piholerestart
     - name: Copy pihole/docker-compose.yaml
       ansible.builtin.copy:
         src: docker-compose-pihole.yaml
         dest: /home/pi/docker/pihole/docker-compose.yaml
+      tags:
+        - piholerestart
+    # - name: Stop docker-compose with pihole
+    #   command: /home/pi/.local/bin/docker-compose down
+    #   args:
+    #     chdir: /home/pi/docker/pihole/
+    #   tags:
+    #      - piholerestart
     - name: Run docker-compose with pihole
       command: /home/pi/.local/bin/docker-compose up -d
       args:
         chdir: /home/pi/docker/pihole/
+      tags:
+        - piholerestart
 
     # WIREGUARD
     - name: Create directory structure for WireGuard
@@ -181,3 +194,19 @@
         chdir: /home/pi/docker/wireguard/
       environment:
         WIREGUARD_EXTERNAL_SERVER_URL: "{{ lookup('env', 'WIREGUARD_EXTERNAL_SERVER_URL') }}"
+
+    # Node-Red + zigbee2mqtt + eclipse-mosquitto
+    - name: Create directory structure for Home-automation
+      ansible.builtin.file:
+        path: /home/pi/docker/home-automation
+        state: directory
+    - name: Copy home-automation/docker-compose.yaml
+      ansible.builtin.copy:
+        src: docker-compose-home-automation.yaml
+        dest: /home/pi/docker/home-automation/docker-compose.yaml
+    # - name: Run docker-compose with wireguard
+    #   command: /home/pi/.local/bin/docker-compose up -d
+    #   args:
+    #     chdir: /home/pi/docker/home-automation/
+    #   environment:
+    #     WIREGUARD_EXTERNAL_SERVER_URL: "{{ lookup('env', 'WIREGUARD_EXTERNAL_SERVER_URL') }}"

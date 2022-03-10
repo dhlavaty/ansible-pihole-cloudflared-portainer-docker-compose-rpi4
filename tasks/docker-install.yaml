@@ -1,0 +1,84 @@
+# Docker installation
+- name: Check if Docker is already present
+  # Execute commands on targets
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+  ansible.builtin.command: which docker
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  register: docker_command_result
+
+- name: Add Docker's official GPG key
+  become: true
+  # Add or remove an apt key
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+  when: docker_command_result.rc == 1
+
+- name: Add docker "stable" repository to apt
+  become: true
+  # Add and remove APT repositories
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html
+  ansible.builtin.apt_repository:
+    repo: deb [arch=armhf] https://download.docker.com/linux/debian buster stable
+    state: present
+  when: docker_command_result.rc == 1
+
+- name: Install docker dependencies
+  become: true
+  # Manages apt-packages
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  # see list on https://docs.docker.com/engine/install/debian/
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+  when: docker_command_result.rc == 1
+
+- name: Install Docker Engine
+  become: true
+  # Manages apt-packages
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+  when: docker_command_result.rc == 1
+
+- name: Add user to docker group
+  become: true
+  # Manage user accounts
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
+  ansible.builtin.user:
+    name: pi
+    groups: docker
+    append: true
+  when: docker_command_result.rc == 1
+
+- name: Create directory structure for my Dockers
+  # Manage files and file properties
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+  ansible.builtin.file:
+    path: /home/pi/docker
+    state: directory
+
+- name: Enable and Start Docker service
+  become: true
+  # Manage services
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html
+  ansible.builtin.service:
+    name: docker
+    # start on boot
+    enabled: true
+    state: started

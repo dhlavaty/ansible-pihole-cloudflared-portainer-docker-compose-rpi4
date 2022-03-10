@@ -1,0 +1,19 @@
+# Automatically upgrade apt packages
+# The purpose of unattended-upgrades is to keep the computer current with the latest security
+# (and other) updates automatically
+- name: Install unattended-upgrades
+  become: true
+  # Manages apt-packages
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: present
+
+- name: Setup unattended-upgrades
+  # Configure a .deb package
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/debconf_module.html
+  ansible.builtin.debconf:
+    name: unattended-upgrades
+    question: unattended-upgrades/enable_auto_updates
+    vtype: boolean
+    value: "true"

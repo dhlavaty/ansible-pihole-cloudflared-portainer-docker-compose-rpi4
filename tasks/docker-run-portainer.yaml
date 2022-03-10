@@ -1,0 +1,30 @@
+# PORTAINER
+- name: Create directory structure for portainer
+  # Manage files and file properties
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+  ansible.builtin.file:
+    path: /home/pi/docker/portainer
+    state: directory
+
+- name: Copy portainer/docker-compose.yaml
+  # Copy files to remote locations
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+  ansible.builtin.copy:
+    src: docker-compose-portainer.yaml
+    dest: /home/pi/docker/portainer/docker-compose.yaml
+
+- name: Run docker-compose with portainer
+  # Execute commands on targets
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+  ansible.builtin.command: /home/pi/.local/bin/docker-compose up -d
+  args:
+    chdir: /home/pi/docker/portainer/
+  when: portainer_enable
+
+- name: Stop docker-compose with portainer
+  # Execute commands on targets
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+  ansible.builtin.command: /home/pi/.local/bin/docker-compose down
+  args:
+    chdir: /home/pi/docker/portainer/
+  when: portainer_enable == false

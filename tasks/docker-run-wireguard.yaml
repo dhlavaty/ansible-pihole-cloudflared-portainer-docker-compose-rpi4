@@ -1,0 +1,32 @@
+# WIREGUARD
+- name: Create directory structure for WireGuard
+  # Manage files and file properties
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+  ansible.builtin.file:
+    path: /home/pi/docker/wireguard
+    state: directory
+
+- name: Copy wireguard/docker-compose.yaml
+  # Copy files to remote locations
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+  ansible.builtin.copy:
+    src: docker-compose-wireguard.yaml
+    dest: /home/pi/docker/wireguard/docker-compose.yaml
+
+- name: Run docker-compose with wireguard
+  # Execute commands on targets
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+  ansible.builtin.command: /home/pi/.local/bin/docker-compose up -d
+  args:
+    chdir: /home/pi/docker/wireguard/
+  environment:
+    WIREGUARD_EXTERNAL_SERVER_URL: "{{ lookup('env', 'WIREGUARD_EXTERNAL_SERVER_URL') }}"
+  when: wireguard_enable
+
+- name: Stop docker-compose with wireguard
+  # Execute commands on targets
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+  ansible.builtin.command: /home/pi/.local/bin/docker-compose down
+  args:
+    chdir: /home/pi/docker/wireguard/
+  when: wireguard_enable == false

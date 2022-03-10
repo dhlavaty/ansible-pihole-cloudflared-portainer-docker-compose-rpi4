@@ -1,0 +1,38 @@
+# PIHOLE
+- name: Create directory structure for pihole
+  # Manage files and file properties
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+  ansible.builtin.file:
+    path: /home/pi/docker/pihole
+    state: directory
+  tags:
+    - piholerestart
+
+- name: Copy pihole/docker-compose.yaml
+  # Copy files to remote locations
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+  ansible.builtin.copy:
+    src: docker-compose-pihole.yaml
+    dest: /home/pi/docker/pihole/docker-compose.yaml
+  tags:
+    - piholerestart
+
+- name: Run docker-compose with pihole
+  # Execute commands on targets
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+  ansible.builtin.command: /home/pi/.local/bin/docker-compose up -d
+  args:
+    chdir: /home/pi/docker/pihole/
+  tags:
+    - piholerestart
+  when: pihole_enable
+
+- name: Stop docker-compose with pihole
+  # Execute commands on targets
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+  ansible.builtin.command: /home/pi/.local/bin/docker-compose down
+  args:
+    chdir: /home/pi/docker/pihole/
+  tags:
+    - piholerestart
+  when: pihole_enable == false

@@ -1,0 +1,8 @@
+# This allows 'pi' user to SSH to raspberry4 without password
+pi_ssh_authorized_keys: https://github.com/dhlavaty.keys
+
+portainer_enable: false
+
+pihole_enable: false
+
+wireguard_enable: false

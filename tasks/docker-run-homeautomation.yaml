@@ -1,0 +1,21 @@
+# My homeautomation setup:
+# Node-Red + zigbee2mqtt + eclipse-mosquitto
+- name: Create directory structure for Home-automation
+  # Manage files and file properties
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+  ansible.builtin.file:
+    path: /home/pi/docker/home-automation
+    state: directory
+
+- name: Copy home-automation/docker-compose.yaml
+  # Copy files to remote locations
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+  ansible.builtin.copy:
+    src: docker-compose-home-automation.yaml
+    dest: /home/pi/docker/home-automation/docker-compose.yaml
+# - name: Run docker-compose with wireguard
+#   command: /home/pi/.local/bin/docker-compose up -d
+#   args:
+#     chdir: /home/pi/docker/home-automation/
+#   environment:
+#     WIREGUARD_EXTERNAL_SERVER_URL: "{{ lookup('env', 'WIREGUARD_EXTERNAL_SERVER_URL') }}"

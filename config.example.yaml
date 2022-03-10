@@ -1,5 +1,13 @@
+# Location where configuration files will be stored. It is usually '/home/pi'
+config_dir: '~'
+
 # This allows 'pi' user to SSH to raspberry4 without password
 pi_ssh_authorized_keys: https://github.com/dhlavaty.keys
+
+shmu_scraper_enable: false
+# Must contain GitHub's "Personal access token" with "admin:public_key" and "repo" scopes
+# See: https://github.com/settings/tokens
+shmu_scraper_github_token: ghp_xxx-censored--censored--censored-xxx
 
 portainer_enable: false
 

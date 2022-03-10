@@ -34,6 +34,7 @@ To run my playbook (run inside container):
 
 ```sh
 # copy `run-example.sh` to `run.sh` and update accordingly
+# copy `config.example.yaml` to `config.yaml` and update accordingly
 ./run.sh
 ```
 

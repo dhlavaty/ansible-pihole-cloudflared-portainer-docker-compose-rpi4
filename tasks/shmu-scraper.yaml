@@ -20,23 +20,36 @@
     state: present
     owner: dhlavaty
     repo: shmu-scraper
-    token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    token: "{{ shmu_scraper_github_token }}"
 
 - name: Clone my private SHMU scraper GitHub repo
   # Deploy software (or files) from git checkouts
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html
   ansible.builtin.git:
     repo: git@github.com:dhlavaty/shmu-scraper.git
-    dest: /home/pi/docker/shmu-scraper/
+    dest: "{{ config_dir }}/docker/shmu-scraper/"
     clone: true
     update: true
     key_file: ~/.ssh/id_rsa
     accept_hostkey: true
 
-- name: Schedule a cron job to run my script periodically. Creates an entry like "1 21 * * * cd /home/pi/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"
+- name: Gathering users homedir ("echo {{ config_dir }}")
+  # Execute commands on targets
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+  ansible.builtin.command: "echo {{ config_dir }}"
+  register: homedir
+
+- name: Users homedir
+  # Print statements during execution
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/debug_module.html
+  ansible.builtin.debug:
+    msg: homedir="{{ homedir.stdout }}"
+
+- name: Schedule a cron job to run my script periodically. Creates an entry like "1 21 * * * cd {{ homedir.stdout }}/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"
+  # Manage cron.d and crontab entries
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
   ansible.builtin.cron:
     name: "run shmu-scraper"
     minute: "1"
     hour: "21"
-    job: "cd /home/pi/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"
-# END: My private GitHub SHMU scraper project -----
+    job: "cd {{ homedir.stdout }}/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"

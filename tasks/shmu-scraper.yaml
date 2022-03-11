@@ -38,6 +38,7 @@
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
   ansible.builtin.command: "echo {{ config_dir }}"
   register: homedir
+  changed_when: false
 
 - name: Users homedir
   # Print statements during execution

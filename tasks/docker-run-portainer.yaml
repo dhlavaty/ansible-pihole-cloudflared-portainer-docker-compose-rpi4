@@ -15,17 +15,19 @@
     dest: "{{ config_dir }}/docker/portainer/docker-compose.yaml"
 
 - name: Run docker-compose with portainer
-  # Execute commands on targets
-  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
-  ansible.builtin.command: "{{ config_dir }}/.local/bin/docker-compose up -d"
-  args:
-    chdir: "{{ config_dir }}/docker/portainer/"
+  # Manage multi-container Docker applications with Docker Compose
+  # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/docker/portainer/"
+    build: false
+  become: false
   when: portainer_enable
 
 - name: Stop docker-compose with portainer
-  # Execute commands on targets
-  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
-  ansible.builtin.command: "{{ config_dir }}/.local/bin/docker-compose down"
-  args:
-    chdir: "{{ config_dir }}/docker/portainer/"
+  # Manage multi-container Docker applications with Docker Compose
+  # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/docker/portainer/"
+    state: absent
+  become: false
   when: portainer_enable == false

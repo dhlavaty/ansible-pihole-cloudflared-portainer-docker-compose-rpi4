@@ -7,6 +7,8 @@
       loop:
         - config.example.yaml
         - config.yaml
+      tags:
+        - always
 
     # Allows you to SSH in to the PiHole via SSH, instead of password auth, pulling from your GitHub Public key
     # This allows me to SSH to my raspberry4, mainly from my MacBook Pro laptop
@@ -51,3 +53,7 @@
 
     - name: Docker run Homeautomation
       ansible.builtin.import_tasks: tasks/docker-run-homeautomation.yaml
+
+    - name: Backup homedir
+      ansible.builtin.import_tasks: tasks/backup-homedir.yaml
+      when: backup_enable

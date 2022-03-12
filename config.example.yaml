@@ -19,3 +19,10 @@ wireguard_enable: false
 wireguard_external_server_url: my-own-domain.duckdns.org
 wireguard_peers_number: 1
 wireguard_port: 51820
+
+backup_enable: false
+backup_dir: "/home/pi/subdir-to-backup/"
+backup_google_project_id: "google-project-id"
+backup_google_bucket: "google-bucket-name"
+backup_google_service_account_key_json: "subdir/service-account-key.json"
+backup_restic_password: "abc123"

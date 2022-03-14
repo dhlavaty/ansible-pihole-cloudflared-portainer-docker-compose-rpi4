@@ -33,7 +33,6 @@
   ansible.builtin.apt:
     name: "{{ item }}"
     state: present
-    update_cache: true
   # see list on https://docs.docker.com/engine/install/debian/
   loop:
     - apt-transport-https

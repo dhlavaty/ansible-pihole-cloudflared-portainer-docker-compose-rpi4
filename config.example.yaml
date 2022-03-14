@@ -26,3 +26,5 @@ backup_google_project_id: "google-project-id"
 backup_google_bucket: "google-bucket-name"
 backup_google_service_account_key_json: "subdir/service-account-key.json"
 backup_restic_password: "abc123"
+
+homeautomation_enable: false

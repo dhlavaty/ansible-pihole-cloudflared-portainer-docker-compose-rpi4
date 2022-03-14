@@ -13,6 +13,7 @@
   ansible.builtin.copy:
     src: docker-compose-portainer.yaml
     dest: "{{ config_dir }}/docker/portainer/docker-compose.yaml"
+    mode: "0640"
 
 - name: Run docker-compose with portainer
   # Manage multi-container Docker applications with Docker Compose

@@ -1,20 +1,50 @@
-# My homeautomation setup:
+# My home automation setup:
 # Node-Red + zigbee2mqtt + eclipse-mosquitto
 - name: Create directory structure for Home-automation
   # Manage files and file properties
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
   ansible.builtin.file:
-    path: /home/pi/docker/home-automation
+    path: "{{ item }}"
     state: directory
-    mode: 0755
+    mode: 0777
+  loop:
+    - "{{ config_dir }}/docker/homeautomation"
+    - "{{ config_dir }}/docker/homeautomation/zigbee2mqtt--app-data"
+    - "{{ config_dir }}/docker/homeautomation/nodered--data"
+    - "{{ config_dir }}/docker/homeautomation/mqtt--mosquitto"
 
-- name: Copy home-automation/docker-compose.yaml
+- name: Copy docker-compose-home-automation.yaml
   # Copy files to remote locations
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
   ansible.builtin.copy:
     src: docker-compose-home-automation.yaml
-    dest: /home/pi/docker/home-automation/docker-compose.yaml
-# - name: Run docker-compose with wireguard
-#   command: /home/pi/.local/bin/docker-compose up -d
-#   args:
-#     chdir: /home/pi/docker/home-automation/
+    dest: "{{ config_dir }}/docker/homeautomation/docker-compose.yaml"
+    mode: "0640"
+
+- name: Copy docker-compose-home-automation.yaml
+  # Copy files to remote locations
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+  ansible.builtin.copy:
+    src: templates/zigbee2mqtt--configuration.yaml
+    dest: "{{ config_dir }}/docker/homeautomation/zigbee2mqtt--app-data/configuration.yaml"
+    # do NOT replace, if file already exist
+    force: no
+    mode: "0666"
+
+- name: Ensure home-automation is running
+  # Manage multi-container Docker applications with Docker Compose
+  # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/docker/homeautomation/"
+    build: false
+  become: false
+  when: homeautomation_enable
+
+- name: Ensure home-automation is not running
+  # Manage multi-container Docker applications with Docker Compose
+  # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/docker/homeautomation/"
+    state: absent
+  become: false
+  when: homeautomation_enable == false

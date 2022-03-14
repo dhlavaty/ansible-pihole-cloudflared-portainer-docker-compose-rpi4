@@ -24,6 +24,7 @@
   ansible.builtin.copy:
     src: "{{ backup_google_service_account_key_json }}"
     dest: "{{ config_dir }}/backup/service-account-key.json"
+    mode: "0640"
   tags:
     - backup
 

@@ -1,0 +1,54 @@
+# zigbee2mqtt/configuration.yaml
+# Just an example file, contains Zigbee network_key. EDIT BEFORE USE
+permit_join: false
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://mqtt
+  reject_unauthorized: false
+serial:
+  port: /dev/ttyUSB0
+frontend:
+  port: 8080
+advanced:
+  pan_id: 6754
+  ext_pan_id:
+    - 21
+    - 21
+    - 21
+    - 21
+    - 21
+    - 21
+    - 21
+    - 21
+  network_key:
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+    - 123
+  ikea_ota_use_test_url: false
+  log_syslog:
+    app_name: Zigbee2MQTT
+    eol: /n
+    host: localhost
+    localhost: localhost
+    path: /dev/log
+    pid: process.pid
+    port: 123
+    protocol: tcp4
+    type: '5424'
+  homeassistant_legacy_entity_attributes: false
+  homeassistant_legacy_triggers: false
+  legacy_api: true
+devices:

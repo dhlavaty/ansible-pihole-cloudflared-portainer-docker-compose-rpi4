@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  nodered:
+    container_name: nodered
+    restart: unless-stopped
+    image: nodered/node-red:latest
+    volumes:
+      - ./nodered--data:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    network_mode: host
+    depends_on:
+      - mqtt
+
+  mqtt:
+    container_name: mqtt
+    image: eclipse-mosquitto:2.0
+    restart: unless-stopped
+    volumes:
+      - "./mqtt--mosquitto:/mosquitto"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    command: "mosquitto -c /mosquitto-no-auth.conf"
+
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    restart: unless-stopped
+    image: koenkk/zigbee2mqtt
+    volumes:
+      - ./zigbee2mqtt--app-data:/app/data
+      - /run/udev:/run/udev:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - 8080:8080
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    user: 1000:1000
+    group_add:
+      - dialout
+    depends_on:
+      - mqtt

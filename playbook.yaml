@@ -42,9 +42,6 @@
     - name: Setup auto upgrade of apt packages (unattended-upgrades)
       ansible.builtin.import_tasks: tasks/unattended-upgrades.yaml
 
-    - name: Docker run Portainer
-      ansible.builtin.import_tasks: tasks/docker-run-portainer.yaml
-
     - name: Docker run Pi-hole
       ansible.builtin.import_tasks: tasks/docker-run-pihole.yaml
 

@@ -1,4 +1,12 @@
 # PIHOLE
+- name: Install nslookup
+  become: true
+  # Manages apt-packages
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+  ansible.builtin.apt:
+    name: dnsutils
+    state: present
+
 - name: Create directory structure for pihole
   # Manage files and file properties
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html

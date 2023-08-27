@@ -5,35 +5,15 @@ As I don't want to mess with installing Python and Ansible itself, I decided to 
 To build my Ansible image:
 
 ```sh
-docker build -f ./myansible.Dockerfile . --tag myansible
+docker build -f ./myansible-new.Dockerfile . --tag myansible2
 ```
 
 To run it:
 
 ```sh
-dockerbashhere myansible
-```
-
-Note: `dockerbashhere` is my zsh alias/func:
-
-```sh
-function dockerbashhere() {
-    dirname=${PWD##*/}
-    docker run --rm -it --entrypoint=/bin/bash -v `pwd`:/${dirname} -w /${dirname} "$@"
-}
-```
-
-Now, to test my Ansible connection (run inside container):
-
-```sh
-# ping my machine
-export ANSIBLE_HOST_KEY_CHECKING=False && ansible all -m ping --inventory hosts.yaml --ask-pass
-```
-
-To run my playbook (run inside container):
-
-```sh
 # copy `config.example.yaml` to `config.yaml` and update accordingly
+docker run --rm -it -v `pwd`:/myansible/workdir myansible2
+## ...or...
 ./run.sh
 ```
 

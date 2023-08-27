@@ -12,6 +12,7 @@ services:
     network_mode: host
     depends_on:
       - mqtt
+      - influxdb18
 
   mqtt:
     container_name: mqtt
@@ -44,3 +45,17 @@ services:
       - dialout
     depends_on:
       - mqtt
+
+  influxdb18:
+    container_name: influxdb18
+    restart: unless-stopped
+    image: influxdb:1.8
+    volumes:
+      - ./influxdb--var-lib-influxdb:/var/lib/influxdb
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - "8086:8086"
+    environment:
+      INFLUXDB_REPORTING_DISABLED: "true"
+      INFLUXDB_DB: mydb

@@ -1,5 +1,5 @@
 all:
   hosts:
-    raspberrypi4.local:
+    raspberrypi4.localdomain:
       ansible_user: pi
       ansible_python_interpreter: auto

@@ -13,15 +13,15 @@
     - "{{ config_dir }}/docker/homeautomation/nodered--data"
     - "{{ config_dir }}/docker/homeautomation/mqtt--mosquitto"
 
-- name: Copy docker-compose-home-automation.yaml
-  # Copy files to remote locations
-  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
-  ansible.builtin.copy:
+- name: Copy docker-compose-home-automation.yaml (as Template)
+  # Template a file out to a target host
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+  ansible.builtin.template:
     src: docker-compose-home-automation.yaml
     dest: "{{ config_dir }}/docker/homeautomation/docker-compose.yaml"
     mode: "0640"
 
-- name: Copy docker-compose-home-automation.yaml
+- name: Copy zigbee2mqtt--configuration.yaml
   # Copy files to remote locations
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
   ansible.builtin.copy:
@@ -31,7 +31,7 @@
     force: no
     mode: "0666"
 
-- name: Ensure home-automation is running
+- name: Ensure home-automation is running (IF homeautomation_enable == true)
   # Manage multi-container Docker applications with Docker Compose
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
   community.docker.docker_compose:
@@ -40,7 +40,7 @@
   become: false
   when: homeautomation_enable
 
-- name: Ensure home-automation is not running
+- name: Ensure home-automation is not running (IF homeautomation_enable == false)
   # Manage multi-container Docker applications with Docker Compose
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
   community.docker.docker_compose:

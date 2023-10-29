@@ -59,3 +59,15 @@ services:
     environment:
       INFLUXDB_REPORTING_DISABLED: "true"
       INFLUXDB_DB: mydb
+
+  netatmo2mqtt:
+    container_name: netatmo2mqtt
+    restart: unless-stopped
+    image: dhlavaty/netatmo2mqtt
+    network_mode: host
+    environment:
+      OAUTH_CLIENT_ID: "{{ netatmo2mqtt_oauth_client_id }}"
+      OAUTH_CLIENT_SECRET: "{{ netatmo2mqtt_oauth_client_secret }}"
+      OAUTH_REFRESH_TOKEN: "{{ netatmo2mqtt_oauth_client_token }}"
+    depends_on:
+      - mqtt

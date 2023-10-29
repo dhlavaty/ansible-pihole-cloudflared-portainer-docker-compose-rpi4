@@ -15,7 +15,7 @@
     state: directory
     mode: 0755
 
-- name: Copy docker-compose-pihole.yaml
+- name: Copy docker-compose-pihole.yaml (as Template)
   # Template a file out to a target host
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
   ansible.builtin.template:
@@ -23,7 +23,7 @@
     dest: "{{ config_dir }}/docker/pihole/docker-compose.yaml"
     mode: "0640"
 
-- name: Ensure pihole is running
+- name: Ensure pihole is running (IF pihole_enable == true)
   # Manage multi-container Docker applications with Docker Compose
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
   community.docker.docker_compose:
@@ -32,7 +32,7 @@
   become: false
   when: pihole_enable
 
-- name: Ensure pihole is not running
+- name: Ensure pihole is not running (IF pihole_enable == false)
   # Manage multi-container Docker applications with Docker Compose
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
   community.docker.docker_compose:

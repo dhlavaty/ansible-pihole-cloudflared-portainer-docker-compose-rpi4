@@ -37,6 +37,10 @@ restic init -r gs:google-bucket-name:/ --verbose
 
 After your Restic repo was initialized, you can run our backup task using ansible.
 
+# Grafana
+
+I run Grafana for my dashboards locally (in docker) and not on RaspberryPi. Everything is prepared in [tools/grafana-web-ui](tools/grafana-web-ui) folder. Just run `run.sh` and/or `stop.sh`.
+
 # Links
 
 My setup was inspired by [How I re-over-engineered my home network for privacy and security](https://ben.balter.com/2021/09/01/how-i-re-over-engineered-my-home-network/) - [https://github.com/benbalter/pi-hole-cloudflared-docker-compose-ansible-caddy](https://github.com/benbalter/pi-hole-cloudflared-docker-compose-ansible-caddy).

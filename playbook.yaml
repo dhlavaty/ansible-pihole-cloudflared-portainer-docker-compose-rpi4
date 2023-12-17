@@ -20,21 +20,24 @@
         state: present
         key: "{{ pi_ssh_authorized_keys }}"
 
-    # Update system-level dependencies
-    - name: update and upgrade apt packages
-      # activate privilege escalation
-      become: true
-      # Manages apt-packages
-      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
-      ansible.builtin.apt:
-        upgrade: dist
-        update_cache: true
-        cache_valid_time: 3600
+    # # Update system-level dependencies
+    # - name: update and upgrade apt packages
+    #   # activate privilege escalation
+    #   become: true
+    #   # Manages apt-packages
+    #   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+    #   ansible.builtin.apt:
+    #     upgrade: dist
+    #     update_cache: true
+    #     cache_valid_time: 3600
 
   tasks:
     - name: Setup my private GitHub SHMU scraper project
       ansible.builtin.import_tasks: tasks/shmu-scraper.yaml
       when: shmu_scraper_enable
+
+    - name: Install Tailscale
+      ansible.builtin.import_tasks: tasks/install-tailscale.yaml
 
     - name: Install Docker
       ansible.builtin.import_tasks: tasks/docker-install.yaml

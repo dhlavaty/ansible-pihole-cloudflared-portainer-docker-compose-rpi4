@@ -19,7 +19,7 @@ pihole_password: "abc123"
 # AWARE: You need to set `read_thermostat` topic when generating your tokens.
 netatmo2mqtt_oauth_client_id: ""
 netatmo2mqtt_oauth_client_secret: ""
-netatmo2mqtt_oauth_client_token: ""
+netatmo2mqtt_oauth_client_refresh_token: ""
 
 wireguard_enable: false
 wireguard_external_server_url: my-own-domain.duckdns.org

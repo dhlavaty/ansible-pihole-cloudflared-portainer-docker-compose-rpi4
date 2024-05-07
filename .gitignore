@@ -1,6 +1,3 @@
 /DO-NOT-COMMIT
 /do-not-commit-backups
-/config.yaml
-/.pdm.toml
 .DS_Store
-tools/grafana-web-ui/grafana-docker--volume/

@@ -35,10 +35,10 @@
       sysctl_set: yes
       state: present
       reload: yes
-    loop:
-      - net.ipv4.ip_forward
-      - net.ipv6.conf.all.forwarding
-    become: true
+  loop:
+    - net.ipv4.ip_forward
+    - net.ipv6.conf.all.forwarding
+  become: true
 
 - name: Install tailscale
   become: true

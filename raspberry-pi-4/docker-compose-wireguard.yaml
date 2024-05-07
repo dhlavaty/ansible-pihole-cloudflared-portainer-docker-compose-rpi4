@@ -23,6 +23,8 @@ services:
       - PEERDNS=auto #optional
       # - INTERNAL_SUBNET=10.13.13.0 #optional
       # - ALLOWEDIPS=0.0.0.0/0 #optional
+      # - INTERNAL_SUBNET=10.13.13.0
+      - ALLOWEDIPS=0.0.0.0/0
     volumes:
       # Contains all relevant configuration files
       - ./config:/config
@@ -35,3 +37,4 @@ services:
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     restart: unless-stopped
+  

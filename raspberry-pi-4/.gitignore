@@ -3,3 +3,4 @@ config.yaml
 .DS_Store
 temp/
 tools/grafana-web-ui/grafana-docker--volume/
+do-not-commit-backups/

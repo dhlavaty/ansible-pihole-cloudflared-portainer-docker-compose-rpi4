@@ -1,0 +1,68 @@
+# https://tailscale.com/download/linux/debian-bookworm
+
+- name: Install, configure, and start Tailscale
+  # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
+  # similar to exception handling in many programming languages.
+  block:
+    - name: Install apt-transport-https
+      become: true
+      # Manages apt-packages
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+      ansible.builtin.apt:
+        name: apt-transport-https
+        state: latest
+
+    - name: Add Tailscale's package signing GPG key
+      become: true
+      # Add or remove an apt key
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+      ansible.builtin.apt_key:
+        url: https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg
+        state: present
+
+    - name: Add Tailscale's package repository to apt
+      become: true
+      # Execute commands on targets
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+      #  #  ansible.builtin.command: "curl -fsSL https://pkgs.tailscale.com/stable/raspbian/buster.list | sudo tee /etc/apt/sources.list.d/tailscale.list"
+      #  #  ansible.builtin.command: "curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list"
+      # Add and remove APT repositories
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html
+      ansible.builtin.apt_repository:
+        filename: tailscale
+        repo: deb https://pkgs.tailscale.com/stable/debian bookworm main
+        state: present
+
+    - name: "Enable IP port forwardings required by Tailscale"
+      ansible.posix.sysctl:
+        name: "{{ item }}"
+        value: "1"
+        sysctl_set: yes
+        state: present
+        reload: yes
+      loop:
+        - net.ipv4.ip_forward
+        - net.ipv6.conf.all.forwarding
+      become: true
+
+    - name: Install tailscale
+      become: true
+      # Manages apt-packages
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+      ansible.builtin.apt:
+        name: tailscale
+        state: latest
+
+    - name: Print HOWTO setup instructions
+      ansible.builtin.debug:
+        msg:
+          - "AWARE"
+          - "For the very first time, you need to login with Tailscale manually."
+          - "Login to your rpi machine and run:"
+          - "sudo tailscale up --qr"
+
+    - name: Run tailscale
+      # Execute commands on targets
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+      ansible.builtin.command: "sudo tailscale up --advertise-exit-node --advertise-routes=192.168.100.0/24"
+      become: true

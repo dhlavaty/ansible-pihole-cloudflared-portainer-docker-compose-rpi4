@@ -42,16 +42,14 @@
     - name: Install Docker
       ansible.builtin.import_tasks: tasks/1-install-docker.yaml
 
+    - name: Install Tailscale
+      ansible.builtin.import_tasks: tasks/2-install-tailscale.yaml
     # - name: Docker run Immich
     #   ansible.builtin.import_tasks: tasks/docker-run-immich.yaml
 
   #   - name: Setup my private GitHub SHMU scraper project
   #     ansible.builtin.import_tasks: tasks/shmu-scraper.yaml
   #     when: shmu_scraper_enable
-
-  #   - name: Install Tailscale
-  #     ansible.builtin.import_tasks: tasks/install-tailscale.yaml
-
 
   #   - name: Docker run Wireguard
   #     ansible.builtin.import_tasks: tasks/docker-run-wireguard.yaml

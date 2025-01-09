@@ -1,14 +1,15 @@
 # Initial preparation of OS on Raspberry Pi 5
 
 Use Raspberry Pi Imager for macOS to prepare SD card
-    - image `Raspberry Pi OS Lite (64bit)` released `2024-11-19`
-    - set Customizations:
-        - set hostname: `rpi5.local`
-        - set username and password: `pi`
-        - setup WIFI with password
-        - locale to `Europe/Bratislava`
-        - keyboard to US
-        - enable SSH (use password auth)
+
+- image `Raspberry Pi OS Lite (64bit)` released `2024-11-19`
+- set Customizations:
+  - set hostname: `rpi5.local`
+  - set username and password: `pi`
+  - setup WIFI with password
+  - locale to `Europe/Bratislava`
+  - keyboard to US
+  - enable SSH (use password auth)
 
 Test:
 

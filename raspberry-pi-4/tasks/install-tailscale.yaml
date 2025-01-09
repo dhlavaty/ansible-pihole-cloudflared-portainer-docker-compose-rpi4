@@ -6,7 +6,7 @@
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
   ansible.builtin.apt:
     name: apt-transport-https
-    state: present
+    state: latest
 
 - name: Add Tailscale's package signing GPG key
   become: true
@@ -46,7 +46,8 @@
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
   ansible.builtin.apt:
     name: tailscale
-    state: present
+    state: latest
+    # update_cache: yes
 
 - name: Print HOWTO setup instructions
   ansible.builtin.debug:

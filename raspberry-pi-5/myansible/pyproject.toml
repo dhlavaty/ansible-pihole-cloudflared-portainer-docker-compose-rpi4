@@ -1,0 +1,23 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "", email = ""},
+]
+dependencies = [
+    "ansible>=9.5.1",
+]
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool.pdm]
+
+[tool.pdm.scripts]
+post_install = { shell = "ansible-galaxy collection install community.crypto && ansible-galaxy collection install community.general && ansible-galaxy collection install community.docker"}
+start.shell = "cd workdir && ansible-playbook playbook.yaml"
+start.env = {ANSIBLE_HOST_KEY_CHECKING = "false", ANSIBLE_INVENTORY = "hosts.yaml", ANSIBLE_ASK_PASS = "true"}

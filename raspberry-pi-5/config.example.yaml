@@ -1,0 +1,15 @@
+# Location where configuration files will be stored. It is usually '/home/pi'
+config_dir: "~"
+
+# This allows 'pi' user to SSH to raspberry5 without password
+pi_ssh_authorized_keys: https://github.com/myusername.keys
+
+# Sub-dir for all docker projects. MUST start with slash like '/docker'
+docker_dir: "/docker"
+
+# # immich
+# immich_enable: false
+# immich_db_password: "redacted"
+# # you can get it by running `echo $(id -u):$(id -g)`
+# # needed to properly set file system user rights on mounted volumes 
+# immich_docker_user: "1000:1000" 

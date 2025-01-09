@@ -1,0 +1,64 @@
+- hosts: all
+  pre_tasks:
+    # - name: Log all ansible vars
+    #   ansible.builtin.debug:
+    #     var: ansible_facts
+
+    - name: Load configuration (with defaults from example file).
+      # Load variables from files, dynamically within a task
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/include_vars_module.html
+      ansible.builtin.include_vars: "{{ item }}"
+      loop:
+        - config.example.yaml
+        - config.yaml
+      tags:
+        - always
+
+    # Allows you to SSH in to the raspberry via SSH, instead of password auth, pulling from your GitHub Public key
+    # This allows me to SSH to my raspberry5, mainly from my MacBook Pro laptop
+    - name: Ensure SSH Key is authorized (from {{ pi_ssh_authorized_keys }} )
+      # Adds or removes an SSH authorized key
+      # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
+      ansible.posix.authorized_key:
+        user: pi
+        state: present
+        key: "{{ pi_ssh_authorized_keys }}"
+
+    # Update system-level dependencies
+    - name: update and upgrade apt packages
+      # activate privilege escalation
+      become: true
+      # Manages apt-packages
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: true
+        cache_valid_time: 3600
+
+  tasks:
+    - name: Setup auto upgrade of apt packages (unattended-upgrades)
+      ansible.builtin.import_tasks: tasks/0-install-unattended-upgrades.yaml
+
+    - name: Install Docker
+      ansible.builtin.import_tasks: tasks/1-install-docker.yaml
+
+    # - name: Docker run Immich
+    #   ansible.builtin.import_tasks: tasks/docker-run-immich.yaml
+
+  #   - name: Setup my private GitHub SHMU scraper project
+  #     ansible.builtin.import_tasks: tasks/shmu-scraper.yaml
+  #     when: shmu_scraper_enable
+
+  #   - name: Install Tailscale
+  #     ansible.builtin.import_tasks: tasks/install-tailscale.yaml
+
+
+  #   - name: Docker run Wireguard
+  #     ansible.builtin.import_tasks: tasks/docker-run-wireguard.yaml
+
+  #   - name: Docker run Homeautomation
+  #     ansible.builtin.import_tasks: tasks/docker-run-homeautomation.yaml
+
+  #   - name: Backup homedir
+  #     ansible.builtin.import_tasks: tasks/backup-homedir.yaml
+  #     when: backup_enable

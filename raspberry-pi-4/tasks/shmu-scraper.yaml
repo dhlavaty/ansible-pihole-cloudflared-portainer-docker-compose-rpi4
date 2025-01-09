@@ -7,6 +7,7 @@
     path: "~/.ssh/id_rsa"
     type: ed25519
   register: ssh_key
+  when: shmu_scraper_enable
 
 # If a new deploy key is generated, authorize it in the GitHub shmu-scraper repo.
 # You need to register GITHUB_TOKEN env variable with GitHub's "Personal access token"
@@ -21,6 +22,7 @@
     owner: dhlavaty
     repo: shmu-scraper
     token: "{{ shmu_scraper_github_token }}"
+  when: shmu_scraper_enable
 
 - name: Clone my private SHMU scraper GitHub repo
   # Deploy software (or files) from git checkouts
@@ -32,6 +34,7 @@
     update: true
     key_file: ~/.ssh/id_rsa
     accept_hostkey: true
+  when: shmu_scraper_enable
 
 - name: Gathering users homedir ("echo {{ config_dir }}")
   # Execute commands on targets
@@ -54,3 +57,4 @@
     minute: "1"
     hour: "21"
     job: "cd {{ homedir.stdout }}/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"
+    state: "absent"

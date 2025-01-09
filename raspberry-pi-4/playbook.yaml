@@ -34,7 +34,6 @@
   tasks:
     - name: Setup my private GitHub SHMU scraper project
       ansible.builtin.import_tasks: tasks/shmu-scraper.yaml
-      when: shmu_scraper_enable
 
     - name: Install Tailscale
       ansible.builtin.import_tasks: tasks/install-tailscale.yaml

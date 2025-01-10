@@ -93,6 +93,8 @@ myansible/build.sh
 
 To run it:
 
+Create `config.yaml` file, use `config.example.yaml` as example.
+
 ```sh
 ./run.sh
 ```

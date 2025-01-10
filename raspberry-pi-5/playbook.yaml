@@ -44,6 +44,10 @@
 
     - name: Install Tailscale
       ansible.builtin.import_tasks: tasks/2-install-tailscale.yaml
+
+    - name: Install Seafile
+      ansible.builtin.import_tasks: tasks/3-docker-run-seafile/3-docker-run-seafile.yaml
+
     # - name: Docker run Immich
     #   ansible.builtin.import_tasks: tasks/docker-run-immich.yaml
 

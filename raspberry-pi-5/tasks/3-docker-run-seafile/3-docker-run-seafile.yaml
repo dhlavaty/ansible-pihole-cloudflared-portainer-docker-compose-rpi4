@@ -1,0 +1,86 @@
+# Seafile
+#
+# Seafile is an open source cloud storage system for file sync, share and document collaboration.
+# https://manual.seafile.com/12.0/setup/setup_ce_by_docker/#getting-started
+#
+# Seafile CE 12.0
+# wget -O template-dot-env https://manual.seafile.com/12.0/docker/ce/env
+# wget -O template-seafile-server.yml https://manual.seafile.com/12.0/docker/ce/seafile-server.yml
+# wget -O template-caddy.yml https://manual.seafile.com/12.0/docker/caddy.yml
+#
+# Note:
+# 1. I've added `restart: unless-stopped` into `template-seafile-server.yml`
+# 2. I've added ansible variables into `template-dot-env`
+#
+#
+- name: Install, configure, and start Seafile
+  # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
+  # similar to exception handling in many programming languages.
+  block:
+    # We need to create all these folders first so once docker mounts volumes into them,
+    # all files and folders has proper ownership
+    - name: Create directory structure for Seafile
+      # Manage files and file properties
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      loop:
+        - "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}"
+        # - "{{ config_dir }}/docker/immich/library"
+        # - "{{ config_dir }}/docker/immich/postgres"
+        # - "{{ config_dir }}/docker/immich/db_dumps"
+        # - "{{ config_dir }}/docker/immich/pgdumpall_dump"
+
+    - name: Copy docker-compose (template-caddy.yaml)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: template-caddy.yml
+        dest: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/caddy.yml"
+        mode: "0640"
+
+    - name: Copy docker-compose (seafile-server.yml)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: template-seafile-server.yml
+        dest: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/seafile-server.yml"
+        mode: "0640"
+        # to prevent replacing some templating already present in original file
+        variable_start_string: "[:"
+        variable_end_string: ":]"
+
+    - name: Copy .env
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: template-dot-env
+        dest: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/.env"
+        mode: "0640"
+
+    - name: Run Seafile in docker
+      # Manage multi-container Docker applications with Docker Compose
+      # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_v2_module.html
+      community.docker.docker_compose_v2:
+        project_src: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/"
+        files:
+          - seafile-server.yml
+          - caddy.yml
+        build: "never"
+      become: false
+
+  # when: immich_enable
+# # TODO: The first time this playbook is run, the `pi` user may not be added
+# # to the `docker` group, so this task may fail.
+#   when: wireguard_enable
+
+# - name: Ensure Wireguard is not running
+#   # Manage multi-container Docker applications with Docker Compose
+#   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
+#   community.docker.docker_compose:
+#     project_src: "{{ config_dir }}/docker/wireguard/"
+#     state: absent
+#   become: false
+#   when: wireguard_enable == false

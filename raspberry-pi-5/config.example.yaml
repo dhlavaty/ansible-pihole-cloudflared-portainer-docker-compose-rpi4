@@ -7,6 +7,10 @@ pi_ssh_authorized_keys: https://github.com/myusername.keys
 # Sub-dir for all docker projects. MUST start with slash like '/docker'
 docker_dir: "/docker"
 
+# Pushover.net settings for notification
+pushover_app_token: 1111122222-REDACTED-5555566666
+pushover_user_key: 1111122222-REDACTED-5555566666
+
 # Seafile
 # Sub-dir for seafile project. MUST start with slash like '/seafile'
 seafile_dir: "/seafile"

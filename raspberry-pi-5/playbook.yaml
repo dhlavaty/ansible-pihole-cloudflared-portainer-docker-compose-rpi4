@@ -48,19 +48,11 @@
     - name: Install Seafile
       ansible.builtin.import_tasks: tasks/3-docker-run-seafile/3-docker-run-seafile.yaml
 
-    # - name: Docker run Immich
-    #   ansible.builtin.import_tasks: tasks/docker-run-immich.yaml
-
-  #   - name: Setup my private GitHub SHMU scraper project
-  #     ansible.builtin.import_tasks: tasks/shmu-scraper.yaml
-  #     when: shmu_scraper_enable
-
-  #   - name: Docker run Wireguard
-  #     ansible.builtin.import_tasks: tasks/docker-run-wireguard.yaml
-
-  #   - name: Docker run Homeautomation
-  #     ansible.builtin.import_tasks: tasks/docker-run-homeautomation.yaml
-
-  #   - name: Backup homedir
-  #     ansible.builtin.import_tasks: tasks/backup-homedir.yaml
-  #     when: backup_enable
+    - name: Playbook done notification (via Pushover)
+      community.general.pushover:
+        msg: 'Ansible done - all ok'
+        pri: -2
+        app_token: "{{ pushover_app_token }}"
+        user_key: "{{ pushover_user_key }}"
+      # This will run on host machine (and not on remote RaspberryPi)
+      delegate_to: localhost

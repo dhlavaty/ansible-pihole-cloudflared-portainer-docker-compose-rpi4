@@ -17,6 +17,11 @@ Test:
 ping rpi5.local
 
 ssh pi@rpi5.local
+
+cat /etc/os-release
+# PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+# NAME="Debian GNU/Linux"
+# ...
 ```
 
 Notes:

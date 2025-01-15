@@ -23,3 +23,12 @@ seafile_jwt_private_key: "-REDACTED-"
 seafile_server_hostname: "redacted.net"
 seafile_init_seafile_admin_email: "redacted@mail.com"
 seafile_init_seafile_admin_password: "-REDACTED-"
+
+# Seafile backups
+seafile_db_backup_dir: "/opt/seafile-mysql-backup"
+backup_google_service_account_key_json_path: "path/to/service-account.json"
+backup_google_project_id: "my-google-project-id-12345"
+backup_google_bucket: "my-bucket-name"
+backup_restic_password: "-REDACTED-"
+backup_pushover_token: "-REDACTED-"
+backup_pushover_user: "-REDACTED-"

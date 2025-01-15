@@ -1,0 +1,94 @@
+#! /bin/sh
+
+# Manual:
+# https://manual.seafile.com/12.0/administration/backup_recovery/
+#
+# The data files to be backed up:
+# /opt/seafile-data/seafile/conf  # configuration files
+# /opt/seafile-data/seafile/seafile-data # data of seafile
+# /opt/seafile-data/seafile/seahub-data # data of seahub
+
+# for debug purposes uncomment
+# set -x
+
+TIMESTAMPSTART=$(date +%FT%T)
+echo "$TIMESTAMPSTART: Backup started"
+
+printenv
+
+rm ccnet_db.sql seafile_db.sql seahub_db.sql
+
+docker exec -i seafile-mysql mysqldump -u root --password={{ seafile_mysql_root_password }} --opt ccnet_db > {{ seafile_db_backup_dir }}/ccnet_db.sql
+
+docker exec -i seafile-mysql mysqldump -u root --password={{ seafile_mysql_root_password }} --opt seafile_db > {{ seafile_db_backup_dir }}/seafile_db.sql
+
+docker exec -i seafile-mysql mysqldump -u root --password={{ seafile_mysql_root_password }} --opt seahub_db > {{ seafile_db_backup_dir }}/seahub_db.sql
+
+echo "-----ls -al------"
+ls -al
+echo "-----/ls---------"
+
+if [  ! -s "ccnet_db.sql"  ] || [  ! -s "seafile_db.sql"  ] || [  ! -s "seahub_db.sql"  ]; then
+    TIMESTAMPERROR=$(date +%FT%T)
+    echo "$TIMESTAMPERROR: ERROR: .sql file is empty"
+
+    curl --form-string "token={{ backup_pushover_token }}" \
+         --form-string "user={{ backup_pushover_user }}" \
+         --form-string "priority=1" \
+         --form-string "message=$TIMESTAMPERROR: Seafile sql export is empty" \
+         https://api.pushover.net/1/messages.json
+
+    set +x
+    exit 1
+fi
+
+export GOOGLE_PROJECT_ID={{ backup_google_project_id }}
+export GOOGLE_APPLICATION_CREDENTIALS={{ seafile_db_backup_dir }}/service-account-key.json
+export RESTIC_PASSWORD={{ backup_restic_password }}
+export RESTIC_REPOSITORY=gs:{{ backup_google_bucket }}:/
+
+# For the very first time, you'll need to INIT restic backup with:
+# $ sudo -E restic init
+
+restic backup \
+    {{ seafile_db_backup_dir }} \
+    /opt/seafile-data/seafile/conf \
+    /opt/seafile-data/seafile/seafile-data \
+    /opt/seafile-data/seafile/seahub-data \
+    --verbose --no-scan
+
+# To check snapshots run:
+# $ sudo -E restic snapshots
+#
+# To list latest files:
+# $ sudo -E restic ls latest --long
+#
+# Exit status is 0 if the command was successful.
+# Exit status is 1 if there was a fatal error (no snapshot created).
+# Exit status is 3 if some source data could not be read (incomplete snapshot created).
+# 
+
+echo "Pushover.net sending notification"
+
+TIMESTAMP=$(date +%FT%T)
+if [ $? -eq 0 ]; then
+    curl --form-string "token={{ backup_pushover_token }}" \
+         --form-string "user={{ backup_pushover_user }}" \
+         --form-string "priority=-1" \
+         --form-string "message=$TIMESTAMP: Backup completed successfully" \
+         https://api.pushover.net/1/messages.json
+
+    echo ""
+    echo "$TIMESTAMP: Backup completed successfully"
+else
+    curl --form-string "token={{ backup_pushover_token }}" \
+         --form-string "user={{ backup_pushover_user }}" \
+         --form-string "priority=1" \
+         --form-string "message=$TIMESTAMP: Some errors occurred during backups" \
+         https://api.pushover.net/1/messages.json
+
+    echo ""
+    echo "$TIMESTAMP: Some error occurred during backup - error code: $?"
+fi
+
+set +x

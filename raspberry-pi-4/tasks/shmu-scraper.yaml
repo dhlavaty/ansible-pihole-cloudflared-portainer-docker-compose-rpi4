@@ -54,7 +54,8 @@
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
   ansible.builtin.cron:
     name: "run shmu-scraper"
+    disabled: true
     minute: "1"
     hour: "21"
     job: "cd {{ homedir.stdout }}/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"
-    state: "absent"
+    state: "present"

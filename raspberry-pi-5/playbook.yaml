@@ -27,7 +27,7 @@
     # Update system-level dependencies
     - name: update and upgrade apt packages
       # activate privilege escalation
-      become: true
+      become: true # we must use `become` as only root can `apt install`
       # Manages apt-packages
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
       ansible.builtin.apt:
@@ -48,10 +48,13 @@
     - name: Install Seafile
       ansible.builtin.import_tasks: tasks/3-docker-run-seafile/3-docker-run-seafile.yaml
 
+    - name: Setup Seafile backups
+      ansible.builtin.import_tasks: tasks/4-backup-seafile/4-backup-seafile.yaml
+
     - name: Playbook done notification (via Pushover)
       community.general.pushover:
         msg: 'Ansible done - all ok'
-        pri: -2
+        # pri: -2
         app_token: "{{ pushover_app_token }}"
         user_key: "{{ pushover_user_key }}"
       # This will run on host machine (and not on remote RaspberryPi)

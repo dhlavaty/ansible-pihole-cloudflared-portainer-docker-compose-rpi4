@@ -1,0 +1,76 @@
+#! /bin/sh
+
+# Recovery manual:
+# https://manual.seafile.com/12.0/administration/backup_recovery/#restore-the-seafile-data
+#
+echo "This script is NOT intended to be run directly. Just read it's source code and follow it"
+exit 1
+
+# -----------------------------------------------
+# Step -1: stop backup jobs
+
+# Be sure backups jobs (including cron jobs) are not running.
+
+# -----------------------------------------------
+# Step 0: set env variables for Restic
+
+export GOOGLE_PROJECT_ID={{ backup_google_project_id }}
+export GOOGLE_APPLICATION_CREDENTIALS={{ seafile_db_backup_dir }}/service-account-key.json
+export RESTIC_PASSWORD={{ backup_restic_password }}
+export RESTIC_REPOSITORY=gs:{{ backup_google_bucket }}:/
+
+# -----------------------------------------------
+# Step 1: cleanup previous (old or corrupted) data
+cd ~/docker/seafile/
+docker compose down
+
+sudo rm /opt/seafile-caddy/ -rf
+sudo rm /opt/seafile-data/ -rf
+sudo rm /opt/seafile-mysql/ -rf
+sudo rm /tmp/restore-seafile/ -rf
+
+docker compose up -d # run clean version of Seafile
+
+# wait until all services will create its own files, and necessary stuff...
+# then stop it again
+
+docker compose stop
+
+# -----------------------------------------------
+# Step 2: restore last Restic snapshot
+cd /opt/seafile-mysql-backup/
+
+sudo -E restic restore latest --target /tmp/restore-seafile
+
+sudo chmod 755 /tmp/restore-seafile
+
+# -----------------------------------------------
+# Step 3: move data
+
+sudo cp -R /tmp/restore-seafile/opt/seafile-data/* /opt/seafile-data/
+
+# -----------------------------------------------
+# Step 4.1: start DB only
+
+cd ~/docker/seafile/
+docker compose start db # start mysql ONLY
+
+# -----------------------------------------------
+# Step 4.2: restore DB
+
+docker cp /tmp/restore-seafile/opt/seafile-mysql-backup/ccnet_db.sql seafile-mysql:/tmp/ccnet_db.sql
+docker cp /tmp/restore-seafile/opt/seafile-mysql-backup/seafile_db.sql seafile-mysql:/tmp/seafile_db.sql
+docker cp /tmp/restore-seafile/opt/seafile-mysql-backup/seahub_db.sql seafile-mysql:/tmp/seahub_db.sql
+
+docker exec -it seafile-mysql /bin/sh -c "mysql -u root --password={{ seafile_mysql_root_password }} ccnet_db < /tmp/ccnet_db.sql"
+docker exec -it seafile-mysql /bin/sh -c "mysql -u root --password={{ seafile_mysql_root_password }} seafile_db < /tmp/seafile_db.sql"
+docker exec -it seafile-mysql /bin/sh -c "mysql -u root --password={{ seafile_mysql_root_password }} seahub_db < /tmp/seahub_db.sql"
+
+# -----------------------------------------------
+# Step 5: run Seafile
+
+cd ~/docker/seafile/
+docker compose start
+
+# -----------------------------------------------
+# Step 6: Turn backup jobs (including cron jobs) back ON

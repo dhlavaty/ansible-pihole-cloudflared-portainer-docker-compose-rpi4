@@ -66,8 +66,8 @@
       ansible.builtin.cron:
         name: "run shmu-scraper"
         disabled: "{{ backup_disable_backups }}"
-        minute: "*/5"
-        # hour: "20"
+        minute: "45"
+        hour: "20"
         user: root
         job: "cd {{ seafile_db_backup_dir }} && ./backup-seafile.sh >> {{ backup_log_file_path }} 2>&1"
         state: "present"

@@ -67,7 +67,7 @@
       ansible.builtin.file:
         path: "{{ config_dir }}{{ docker_dir }}"
         state: directory
-        mode: 0755
+        mode: "0755"
 
     - name: Print directory path for my Dockers
       # Manage files and file properties

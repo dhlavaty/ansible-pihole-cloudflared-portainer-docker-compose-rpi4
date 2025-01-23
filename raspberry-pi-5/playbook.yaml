@@ -1,4 +1,5 @@
-- hosts: all
+- name: Raspberry Pi 5 setup with Seafile
+  hosts: all
   pre_tasks:
     # - name: Log all ansible vars
     #   ansible.builtin.debug:
@@ -25,7 +26,7 @@
         key: "{{ pi_ssh_authorized_keys }}"
 
     # Update system-level dependencies
-    - name: update and upgrade apt packages
+    - name: Update and upgrade apt packages
       # activate privilege escalation
       become: true # we must use `become` as only root can `apt install`
       # Manages apt-packages
@@ -40,13 +41,15 @@
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
       ansible.builtin.command: 'update-rc.d lightdm disable'
       become: true
+      register: stop_x_output
+      changed_when: stop_x_output.rc != 0
 
   roles:
-    - unattended-upgrades
+    - unattended_upgrades
     - docker
     - tailscale
-    - docker-seafile
-    - backup-seafile
+    - docker_seafile
+    - backup_seafile
 
   post_tasks:
     - name: Playbook done notification (via Pushover)

@@ -10,7 +10,7 @@
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
       ansible.builtin.apt:
         name: apt-transport-https
-        state: latest
+        state: present
 
     - name: Add Tailscale's package signing GPG key
       become: true
@@ -22,10 +22,6 @@
 
     - name: Add Tailscale's package repository to apt
       become: true
-      # Execute commands on targets
-      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
-      #  #  ansible.builtin.command: "curl -fsSL https://pkgs.tailscale.com/stable/raspbian/buster.list | sudo tee /etc/apt/sources.list.d/tailscale.list"
-      #  #  ansible.builtin.command: "curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list"
       # Add and remove APT repositories
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html
       ansible.builtin.apt_repository:
@@ -37,9 +33,9 @@
       ansible.posix.sysctl:
         name: "{{ item }}"
         value: "1"
-        sysctl_set: yes
+        sysctl_set: true
         state: present
-        reload: yes
+        reload: true
       loop:
         - net.ipv4.ip_forward
         - net.ipv6.conf.all.forwarding
@@ -52,6 +48,7 @@
       ansible.builtin.apt:
         name: tailscale
         state: latest
+        only_upgrade: true
 
     - name: Print HOWTO setup instructions
       ansible.builtin.debug:
@@ -66,3 +63,5 @@
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
       ansible.builtin.command: "sudo tailscale up --advertise-exit-node --advertise-routes=192.168.100.0/24"
       become: true
+      register: tailscale_output
+      changed_when: tailscale_output.rc != 0

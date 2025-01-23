@@ -60,11 +60,11 @@
           - "For the very first time, you need to init restic repository."
           - "Login to your rpi machine and check `{{ seafile_db_backup_dir }}/backup-seafile.sh` file for info."
 
-    - name: Schedule a cron job to run my script periodically. Creates an entry like "1 21 * * * cd {{ homedir.stdout }}/docker/shmu-scraper && ./run-in-docker.sh > /dev/null"
+    - name: Schedule a cron job to run my script periodically.
       # Manage cron.d and crontab entries
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
       ansible.builtin.cron:
-        name: "run shmu-scraper"
+        name: "Backup Seafile"
         disabled: "{{ backup_disable_backups }}"
         minute: "45"
         hour: "20"

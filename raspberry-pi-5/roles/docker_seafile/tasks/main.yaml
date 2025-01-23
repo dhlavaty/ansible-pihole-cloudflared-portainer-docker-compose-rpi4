@@ -25,7 +25,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
-        mode: 0755
+        mode: "0755"
       loop:
         - "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}"
         # - "{{ config_dir }}/docker/immich/library"

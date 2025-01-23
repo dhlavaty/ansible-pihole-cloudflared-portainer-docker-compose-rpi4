@@ -103,3 +103,17 @@ Create `config.yaml` file, use `config.example.yaml` as example.
 ```sh
 ./run.sh
 ```
+# Last steps
+
+Disable Bluetooth and WIFI after everything is checked and works:
+
+```sh
+
+sudo nano /boot/firmware/config.txt
+
+# add into [all] section:
+# dtoverlay=disable-wifi
+# dtoverlay=disable-bt
+
+sudo reboot now
+```

@@ -69,26 +69,6 @@
         minute: "45"
         hour: "20"
         user: root
-        job: "cd {{ seafile_db_backup_dir }} && ./backup-seafile.sh >> {{ backup_log_file_path }} 2>&1"
+        job: "{ cd {{ seafile_db_backup_dir }} && ./backup-seafile.sh | logger -t seafilebackup.cron -p 6; } 2>&1 | logger -t seafilebackup.cron -p 3"
         state: "present"
       become: true # we must use `become` as we are setting `cron` to `root` user
-
-    - name: Create directory structure for Seafile backup logs
-      # Manage files and file properties
-      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
-      ansible.builtin.file:
-        path: "{{ backup_log_file_path | dirname }}" # `dirname` - filter to get the directory from a path
-        state: directory
-        mode: 0755
-      become: true # we must use `become` as `/opt` us only accessible to `root` user
-
-    - name: Setup logrotate for backup logs ( /etc/logrotate.d/seafile-backup )
-      # Template a file out to a target host
-      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
-      ansible.builtin.template:
-        src: template-logrotate.j2
-        dest: /etc/logrotate.d/seafile-backup
-        owner: root
-        group: root
-        mode: 0644
-      become: true # we must use `become` as `/opt` us only accessible to `root` user

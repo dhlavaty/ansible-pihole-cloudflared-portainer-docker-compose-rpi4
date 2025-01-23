@@ -35,22 +35,20 @@
         update_cache: true
         cache_valid_time: 3600
 
-  tasks:
-    - name: Setup auto upgrade of apt packages (unattended-upgrades)
-      ansible.builtin.import_tasks: tasks/0-install-unattended-upgrades.yaml
+    - name: Stop running X server
+      # Execute commands on targets
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+      ansible.builtin.command: 'update-rc.d lightdm disable'
+      become: true
 
-    - name: Install Docker
-      ansible.builtin.import_tasks: tasks/1-install-docker.yaml
+  roles:
+    - unattended-upgrades
+    - docker
+    - tailscale
+    - docker-seafile
+    - backup-seafile
 
-    - name: Install Tailscale
-      ansible.builtin.import_tasks: tasks/2-install-tailscale.yaml
-
-    - name: Install Seafile
-      ansible.builtin.import_tasks: tasks/3-docker-run-seafile/3-docker-run-seafile.yaml
-
-    - name: Setup Seafile backups
-      ansible.builtin.import_tasks: tasks/4-backup-seafile/4-backup-seafile.yaml
-
+  post_tasks:
     - name: Playbook done notification (via Pushover)
       community.general.pushover:
         msg: 'Ansible done - all ok'

@@ -18,20 +18,20 @@
         - "{{ seafile_db_backup_dir }}"
       become: true # we must use `become` as `/opt` us only accessible to `root` user
 
-    - name: Copy backup shell script (backup-seafile.sh)
+    - name: Copy backup shell script (backup-seafile.sh.j2)
       # Template a file out to a target host
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
       ansible.builtin.template:
-        src: template-backup-seafile.sh.j2
+        src: backup-seafile.sh.j2
         dest: "{{ seafile_db_backup_dir }}/backup-seafile.sh"
         mode: "0750"
       become: true # we must use `become` as `/opt` us only accessible to `root` user
 
-    - name: Copy restore shell script (restore-seafile-backup.sh)
+    - name: Copy restore shell script (restore-seafile-backup.sh.j2)
       # Template a file out to a target host
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
       ansible.builtin.template:
-        src: template-restore-seafile-backup.sh.j2
+        src: restore-seafile-backup.sh.j2
         dest: "{{ seafile_db_backup_dir }}/restore-seafile-backup.sh"
         mode: "0750"
       become: true # we must use `become` as `/opt` us only accessible to `root` user

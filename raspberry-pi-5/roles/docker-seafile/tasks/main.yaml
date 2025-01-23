@@ -4,13 +4,13 @@
 # https://manual.seafile.com/12.0/setup/setup_ce_by_docker/#getting-started
 #
 # Seafile CE 12.0
-# wget -O template-dot-env https://manual.seafile.com/12.0/docker/ce/env
-# wget -O template-seafile-server.yml https://manual.seafile.com/12.0/docker/ce/seafile-server.yml
-# wget -O template-caddy.yml https://manual.seafile.com/12.0/docker/caddy.yml
+# wget -O dot-env.j2 https://manual.seafile.com/12.0/docker/ce/env
+# wget -O docker-compose-seafile-server.yml.j2 https://manual.seafile.com/12.0/docker/ce/seafile-server.yml
+# wget -O docker-compose-caddy.yml.j2 https://manual.seafile.com/12.0/docker/caddy.yml
 #
 # Note:
-# 1. I've added `restart: unless-stopped` into `template-seafile-server.yml`
-# 2. I've added ansible variables into `template-dot-env`
+# 1. I've added `restart: unless-stopped` into `docker-compose-seafile-server.yml.j2`
+# 2. I've added ansible variables into `dot-env.j2`
 #
 #
 - name: Install, configure, and start Seafile
@@ -33,30 +33,30 @@
         # - "{{ config_dir }}/docker/immich/db_dumps"
         # - "{{ config_dir }}/docker/immich/pgdumpall_dump"
 
-    - name: Copy docker-compose (template-caddy.yaml)
+    - name: Copy docker-compose (docker-compose-caddy.yml.j2)
       # Template a file out to a target host
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
       ansible.builtin.template:
-        src: template-caddy.yml
+        src: "docker-compose-caddy.yml.j2"
         dest: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/caddy.yml"
         mode: "0640"
 
-    - name: Copy docker-compose (seafile-server.yml)
+    - name: Copy docker-compose (docker-compose-seafile-server.yml.j2)
       # Template a file out to a target host
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
       ansible.builtin.template:
-        src: template-seafile-server.yml
+        src: "docker-compose-seafile-server.yml.j2"
         dest: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/seafile-server.yml"
         mode: "0640"
         # to prevent replacing some templating already present in original file
         variable_start_string: "[:"
         variable_end_string: ":]"
 
-    - name: Copy .env
+    - name: Copy .env (dot-env.j2)
       # Template a file out to a target host
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
       ansible.builtin.template:
-        src: template-dot-env
+        src: dot-env.j2
         dest: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/.env"
         mode: "0640"
 
@@ -70,17 +70,3 @@
           - caddy.yml
         build: "never"
       become: false
-
-  # when: immich_enable
-# # TODO: The first time this playbook is run, the `pi` user may not be added
-# # to the `docker` group, so this task may fail.
-#   when: wireguard_enable
-
-# - name: Ensure Wireguard is not running
-#   # Manage multi-container Docker applications with Docker Compose
-#   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
-#   community.docker.docker_compose:
-#     project_src: "{{ config_dir }}/docker/wireguard/"
-#     state: absent
-#   become: false
-#   when: wireguard_enable == false

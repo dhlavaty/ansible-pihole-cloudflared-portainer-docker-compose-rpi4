@@ -34,3 +34,6 @@ backup_google_bucket: "my-bucket-name"
 backup_restic_password: "-REDACTED-"
 backup_pushover_token: "-REDACTED-"
 backup_pushover_user: "-REDACTED-"
+
+# Auto-reboot
+auto_reboot_disable: false

@@ -117,3 +117,13 @@ sudo nano /boot/firmware/config.txt
 
 sudo reboot now
 ```
+
+# Last steps 2
+
+Reduce Raspberry Pi 5's power consumption by 140x (when shut down).
+
+```sh
+sudo rpi-eeprom-config -e
+```
+
+set `POWER_OFF_ON_HALT=1`. Inspired by https://www.jeffgeerling.com/blog/2023/reducing-raspberry-pi-5s-power-consumption-140x

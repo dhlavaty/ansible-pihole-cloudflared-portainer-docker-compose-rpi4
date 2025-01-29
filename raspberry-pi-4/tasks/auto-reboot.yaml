@@ -1,0 +1,17 @@
+# Inspired by https://www.jeffgeerling.com/blog/2021/setting-pi-remote-internet-connection-monitoring
+- name: Automatically reboot RaspberryPi at night
+  # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
+  # similar to exception handling in many programming languages.
+  block:
+    - name: Schedule a cron job to reboot at night
+      # Manage cron.d and crontab entries
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
+      ansible.builtin.cron:
+        name: "Reboot rpi"
+        disabled: "{{ auto_reboot_disable }}"
+        minute: "3"
+        hour: "3"
+        user: root
+        job: "/usr/sbin/shutdown -r"
+        state: "present"
+      become: true # we must use `become` as we are setting `cron` to `root` user

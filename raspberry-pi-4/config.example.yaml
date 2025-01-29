@@ -34,3 +34,5 @@ backup_google_service_account_key_json: "subdir/service-account-key.json"
 backup_restic_password: "abc123"
 
 homeautomation_enable: false
+
+auto_reboot_disable: false

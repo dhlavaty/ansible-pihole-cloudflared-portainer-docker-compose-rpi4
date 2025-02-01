@@ -6,6 +6,10 @@
     - name: Schedule a cron job to reboot at night
       # Manage cron.d and crontab entries
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
+      #
+      # To check last reboot use:
+      # $ uptime --since
+      #
       ansible.builtin.cron:
         name: "Reboot rpi"
         disabled: "{{ auto_reboot_disable }}"

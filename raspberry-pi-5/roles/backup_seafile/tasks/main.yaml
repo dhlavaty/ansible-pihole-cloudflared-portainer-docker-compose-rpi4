@@ -63,6 +63,10 @@
     - name: Schedule a cron job to run my script periodically.
       # Manage cron.d and crontab entries
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
+      #
+      # To check backup logs use:
+      # $ journalctl -r -t seafilebackup.cron
+      #
       ansible.builtin.cron:
         name: "Backup Seafile"
         disabled: "{{ backup_disable_backups }}"

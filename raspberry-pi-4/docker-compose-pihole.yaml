@@ -31,7 +31,7 @@ services:
 
   cloudflared:
     container_name: cloudflared
-    image: visibilityspots/cloudflared:alpine-3.12
+    image: visibilityspots/cloudflared:v2025.2.0
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

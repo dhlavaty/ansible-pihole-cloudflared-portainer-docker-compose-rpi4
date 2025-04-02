@@ -51,6 +51,7 @@
     - docker_seafile
     - backup_seafile
     - auto_reboot
+    - useful_bash_aliases
 
   post_tasks:
     - name: Playbook done notification (via Pushover)

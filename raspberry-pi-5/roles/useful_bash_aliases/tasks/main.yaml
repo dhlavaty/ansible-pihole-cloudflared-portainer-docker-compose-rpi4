@@ -1,0 +1,26 @@
+- name: Add useful bash aliases
+  # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
+  # similar to exception handling in many programming languages.
+  block:
+    - name: Easier 'cd' navigation [OLD]
+      ansible.builtin.lineinfile:
+        path: "{{ config_dir }}/.bash_aliases"
+        line: "alias ..=\"cd ..\" # [ansible#8]"
+        search_string: "[ansible#8]"
+        create: true
+        state: absent
+
+    - name: Easier 'cd' navigation
+      ansible.builtin.blockinfile:
+        path: "{{ config_dir }}/.bash_aliases"
+        prepend_newline: true
+        create: true
+        block: |
+          alias ..="cd .."
+          alias ...="cd ../.."
+          alias ....="cd ../../.."
+          alias .....="cd ../../../.."
+          alias l="ls -lF"
+          alias tree='find . -type d | sort | sed -e "s/[^-][^\/]*\//   |/g" -e "s/|\([^ ]\)/|-- \/\1/"'
+          alias temp="vcgencmd measure_temp"
+          alias up="uptime --since"

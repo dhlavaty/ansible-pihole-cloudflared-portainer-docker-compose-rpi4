@@ -36,3 +36,10 @@
               dirname=${PWD##*/}
               docker run --rm -it --entrypoint=/bin/sh -v `pwd`:/${dirname} -w /${dirname} "$@"
           }
+          # to login use smb://192.168.100.xxx/share
+          function smbservehere() {
+              local sharename
+              [[ -z $1 ]] && sharename="SHARE" || sharename=$1
+              # For 'dhlavaty/mypacket' docker image see: https://gist.github.com/dhlavaty/82fc2bde306712b975455b645d0afb90
+              docker run --rm -it --entrypoint "/opt/venv/bin/python" -p 445:445 -v "${PWD}:/tmp/serve" dhlavaty/mypacket /opt/venv/bin/smbserver.py $sharename /tmp/serve
+          }

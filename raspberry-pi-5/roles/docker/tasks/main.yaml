@@ -3,6 +3,8 @@
 #
 # Notes:
 # Raspberry Pi 5 64bit architeture is `arm64` ( check `dpkg --print-architecture` )
+#                      ...for Docker it is `--platform linux/arm64`
+# 
 #
 # Docker installation
 

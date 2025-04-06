@@ -20,7 +20,19 @@
           alias ...="cd ../.."
           alias ....="cd ../../.."
           alias .....="cd ../../../.."
+          alias p="cd ~"
           alias l="ls -lF"
           alias tree='find . -type d | sort | sed -e "s/[^-][^\/]*\//   |/g" -e "s/|\([^ ]\)/|-- \/\1/"'
           alias temp="vcgencmd measure_temp"
           alias up="uptime --since"
+          # docker aliases inspired by https://blog.ropnop.com/docker-for-pentesters/
+          alias dockerbash="docker run --rm -i -t --entrypoint=/bin/bash"
+          alias dockersh="docker run --rm -i -t --entrypoint=/bin/sh"
+          function dockerbashhere() {
+              dirname=${PWD##*/}
+              docker run --rm -it --entrypoint=/bin/bash -v `pwd`:/${dirname} -w /${dirname} "$@"
+          }
+          function dockershhere() {
+              dirname=${PWD##*/}
+              docker run --rm -it --entrypoint=/bin/sh -v `pwd`:/${dirname} -w /${dirname} "$@"
+          }

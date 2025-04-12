@@ -37,6 +37,10 @@ restic init -r gs:google-bucket-name:/ --verbose
 
 After your Restic repo was initialized, you can run our backup task using ansible.
 
+# Last steps
+
+Manually add [DoH-IP-blocklists](https://github.com/dibdot/DoH-IP-blocklists) into PiHole - [list](https://raw.githubusercontent.com/dibdot/DoH-IP-blocklists/refs/heads/master/doh-domains_overall.txt).
+
 # Grafana
 
 I run Grafana for my dashboards locally (in docker) and not on RaspberryPi. Everything is prepared in [tools/grafana-web-ui](tools/grafana-web-ui) folder. Just run `run.sh` and/or `stop.sh`.

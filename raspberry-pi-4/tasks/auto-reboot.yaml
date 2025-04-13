@@ -3,7 +3,7 @@
   # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
   # similar to exception handling in many programming languages.
   block:
-    - name: Schedule a cron job to reboot at night
+    - name: Schedule a cron job to reboot at night (every Saturday a 3:03)
       # Manage cron.d and crontab entries
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
       ansible.builtin.cron:
@@ -11,6 +11,7 @@
         disabled: "{{ auto_reboot_disable }}"
         minute: "3"
         hour: "3"
+        weekday: "6" # 6 == Saturday
         user: root
         job: "/usr/sbin/shutdown -r"
         state: "present"

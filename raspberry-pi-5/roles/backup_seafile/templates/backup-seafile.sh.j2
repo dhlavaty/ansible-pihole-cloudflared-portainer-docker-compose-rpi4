@@ -73,6 +73,11 @@ RESTIC_EXIT_CODE=$?
 # Exit status is 3 if some source data could not be read (incomplete snapshot created).
 # 
 
+echo "Checking disk space used"
+
+DISKUSAGEPERCENT=$(df / | tail -1 | awk '{print $5}')
+echo $DISKUSAGEPERCENT
+
 echo "Pushover.net sending notification"
 
 TIMESTAMP=$(date +%FT%T)
@@ -80,7 +85,7 @@ if [ $RESTIC_EXIT_CODE -eq 0 ]; then
     curl --form-string "token={{ backup_pushover_token }}" \
          --form-string "user={{ backup_pushover_user }}" \
          --form-string "priority=-1" \
-         --form-string "message=$TIMESTAMP: Backup completed successfully" \
+         --form-string "message=$TIMESTAMP: Backup completed successfully (disk usage: $DISKUSAGEPERCENT)" \
          https://api.pushover.net/1/messages.json
 
     echo ""
@@ -89,7 +94,7 @@ else
     curl --form-string "token={{ backup_pushover_token }}" \
          --form-string "user={{ backup_pushover_user }}" \
          --form-string "priority=1" \
-         --form-string "message=$TIMESTAMP: Some errors occurred during backups - error code: $RESTIC_EXIT_CODE" \
+         --form-string "message=$TIMESTAMP: Some errors occurred during backups - error code: $RESTIC_EXIT_CODE (disk usage: $DISKUSAGEPERCENT)" \
          https://api.pushover.net/1/messages.json
 
     echo ""

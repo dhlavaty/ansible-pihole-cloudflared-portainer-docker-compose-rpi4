@@ -41,6 +41,24 @@ After your Restic repo was initialized, you can run our backup task using ansibl
 
 Manually add [DoH-IP-blocklists](https://github.com/dibdot/DoH-IP-blocklists) into PiHole - [list](https://raw.githubusercontent.com/dibdot/DoH-IP-blocklists/refs/heads/master/doh-domains_overall.txt).
 
+Manually add IPv4 and IPv6 from [DoH-IP-blocklists](https://github.com/dibdot/DoH-IP-blocklists) into firewall rule.
+
+Convert `doh-ipv4.txt` to JSON:
+
+```sh
+awk 'BEGIN { printf("[\n") } { printf("%s\"%s\"", (NR==1?"":",\n"), $1) } END { print "\n]" }' doh-ipv4.txt > doh-ipv4.json
+```
+
+Check firewall rule:
+
+```sh
+# using netcat
+nc 1.1.1.1 443
+
+# using curl
+curl -v telnet://1.1.1.1:443
+```
+
 # Grafana
 
 I run Grafana for my dashboards locally (in docker) and not on RaspberryPi. Everything is prepared in [tools/grafana-web-ui](tools/grafana-web-ui) folder. Just run `run.sh` and/or `stop.sh`.

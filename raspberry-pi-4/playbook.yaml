@@ -31,6 +31,9 @@
     #     update_cache: true
     #     cache_valid_time: 3600
 
+  roles:
+    - useful_bash_aliases
+
   tasks:
     - name: Setup my private GitHub SHMU scraper project
       ansible.builtin.import_tasks: tasks/shmu-scraper.yaml

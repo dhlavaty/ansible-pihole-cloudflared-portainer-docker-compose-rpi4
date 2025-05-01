@@ -5,7 +5,6 @@
     - name: Useful bash aliases
       ansible.builtin.blockinfile:
         path: "{{ config_dir }}/.bash_aliases"
-        prepend_newline: true
         create: true
         block: |
           alias ..="cd .."

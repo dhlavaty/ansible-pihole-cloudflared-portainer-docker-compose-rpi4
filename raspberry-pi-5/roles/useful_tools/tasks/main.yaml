@@ -1,0 +1,10 @@
+- name: Install useful tools
+  # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
+  # similar to exception handling in many programming languages.
+  block:
+    - name: Install nslookup
+      become: true
+      # Manages apt-packages
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+      ansible.builtin.apt:
+        name: dnsutils

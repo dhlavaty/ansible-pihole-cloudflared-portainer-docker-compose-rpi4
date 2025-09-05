@@ -52,6 +52,7 @@
     - backup_seafile
     - auto_reboot
     - useful_bash_aliases
+    - useful_tools
 
   post_tasks:
     - name: Playbook done notification (via Pushover)

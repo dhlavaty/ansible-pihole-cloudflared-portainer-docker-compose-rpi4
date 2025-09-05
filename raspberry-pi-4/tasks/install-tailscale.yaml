@@ -58,5 +58,5 @@
 - name: Run tailscale
   # Execute commands on targets
   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
-  ansible.builtin.command: "sudo tailscale up --advertise-exit-node --advertise-routes=192.168.100.0/24"
+  ansible.builtin.command: "sudo tailscale up --advertise-exit-node --advertise-routes=192.168.100.0/24 --accept-dns=false"
   become: true

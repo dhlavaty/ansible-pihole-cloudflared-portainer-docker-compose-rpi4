@@ -12,7 +12,7 @@
           alias ....="cd ../../.."
           alias .....="cd ../../../.."
           alias p="cd ~"
-          alias l="ls -lF"
+          alias l="ls -lah"
           alias tree='find . -type d | sort | sed -e "s/[^-][^\/]*\//   |/g" -e "s/|\([^ ]\)/|-- \/\1/"'
           alias temp="vcgencmd measure_temp"
           alias up="uptime --since"

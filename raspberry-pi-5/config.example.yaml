@@ -1,3 +1,5 @@
+# Look into your password manager for production version of this file.
+# --------------------------------------------------------------------
 # Location where configuration files will be stored. It is usually '/home/pi'
 config_dir: "~"
 

@@ -39,3 +39,11 @@ backup_pushover_user: "-REDACTED-"
 
 # Auto-reboot
 auto_reboot_disable: false
+
+# Immich
+# Sub-dir for immich project. MUST start with slash like '/immich'
+immich_dir: "/immich"
+immich_db_password: "-REDACTED-"
+immich_upload_location: "/opt/immich-data/library"
+immich_db_data_location: "/opt/immich-data/postgres"
+immich_time_zone: "Etc/UTC"

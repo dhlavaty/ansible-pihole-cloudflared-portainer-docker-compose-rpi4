@@ -49,6 +49,7 @@
     - docker
     - tailscale
     - docker_seafile
+    - docker_immich
     - backup_seafile
     - auto_reboot
     - useful_bash_aliases

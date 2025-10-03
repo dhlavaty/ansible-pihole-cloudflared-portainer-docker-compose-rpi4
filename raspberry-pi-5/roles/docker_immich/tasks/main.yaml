@@ -1,0 +1,50 @@
+# Immich
+#
+# Immich is an open source high performance self-hosted photo and video management solution. 
+# https://github.com/immich-app/immich
+#
+# Immich v2.0.0
+#
+# Note:
+#
+#
+- name: Install, configure, and start Immich
+  # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
+  # similar to exception handling in many programming languages.
+  block:
+    # We need to create all these folders first so once docker mounts volumes into them,
+    # all files and folders has proper ownership
+    - name: Create directory structure for Immich
+      # Manage files and file properties
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{ config_dir }}{{ docker_dir }}{{ immich_dir }}"
+        # - "{{ config_dir }}/docker/immich/library"
+
+    - name: Copy docker-compose (docker-compose.yml.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: "docker-compose.yml.j2"
+        dest: "{{ config_dir }}{{ docker_dir }}{{ immich_dir }}/docker-compose.yml"
+        mode: "0640"
+
+    - name: Copy .env (dot-env.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: dot-env.j2
+        dest: "{{ config_dir }}{{ docker_dir }}{{ immich_dir }}/.env"
+        mode: "0640"
+
+    - name: Run Immich in docker
+      # Manage multi-container Docker applications with Docker Compose
+      # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_v2_module.html
+      community.docker.docker_compose_v2:
+        project_src: "{{ config_dir }}{{ docker_dir }}{{ immich_dir }}/"
+        build: "never"
+      become: false

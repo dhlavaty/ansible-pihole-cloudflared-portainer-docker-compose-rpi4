@@ -16,7 +16,7 @@
         mode: "0755"
       loop:
         - "{{ seafile_db_backup_dir }}"
-      become: true # we must use `become` as `/opt` us only accessible to `root` user
+      become: true # we must use `become` as `/opt` is only accessible to `root` user
 
     - name: Copy backup shell script (backup-seafile.sh.j2)
       # Template a file out to a target host
@@ -25,7 +25,7 @@
         src: backup-seafile.sh.j2
         dest: "{{ seafile_db_backup_dir }}/backup-seafile.sh"
         mode: "0750"
-      become: true # we must use `become` as `/opt` us only accessible to `root` user
+      become: true # we must use `become` as `/opt` is only accessible to `root` user
 
     - name: Copy restore shell script (restore-seafile-backup.sh.j2)
       # Template a file out to a target host
@@ -34,7 +34,7 @@
         src: restore-seafile-backup.sh.j2
         dest: "{{ seafile_db_backup_dir }}/restore-seafile-backup.sh"
         mode: "0750"
-      become: true # we must use `become` as `/opt` us only accessible to `root` user
+      become: true # we must use `become` as `/opt` is only accessible to `root` user
 
     - name: Install Restic
       # Manages apt-packages
@@ -51,7 +51,7 @@
         src: "{{ backup_google_service_account_key_json_path }}"
         dest: "{{ seafile_db_backup_dir }}/service-account-key.json"
         mode: "0640"
-      become: true # we must use `become` as `/opt` us only accessible to `root` user
+      become: true # we must use `become` as `/opt` is only accessible to `root` user
 
     - name: Print HOWTO setup instructions
       ansible.builtin.debug:

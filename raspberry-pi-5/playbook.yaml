@@ -50,7 +50,7 @@
     - tailscale
     - docker_seafile
     - docker_immich
-    - backup_seafile
+    - backup_data
     - auto_reboot
     - useful_bash_aliases
     - useful_tools

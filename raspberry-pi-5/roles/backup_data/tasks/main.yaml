@@ -36,6 +36,15 @@
         mode: "0750"
       become: true # we must use `become` as `/opt` is only accessible to `root` user
 
+    - name: Copy backup shell script (backup-immich.sh.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: backup-immich.sh.j2
+        dest: "{{ seafile_db_backup_dir }}/backup-immich.sh"
+        mode: "0750"
+      become: true # we must use `become` as `/opt` is only accessible to `root` user
+
     - name: Install Restic
       # Manages apt-packages
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
@@ -60,7 +69,7 @@
           - "For the very first time, you need to init restic repository."
           - "Login to your rpi machine and check `{{ seafile_db_backup_dir }}/backup-seafile.sh` file for info."
 
-    - name: Schedule a cron job to run my script periodically.
+    - name: Schedule a cron job to backup Seafile periodically (daily at 20:45)
       # Manage cron.d and crontab entries
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
       #
@@ -74,5 +83,22 @@
         hour: "20"
         user: root
         job: "{ cd {{ seafile_db_backup_dir }} && ./backup-seafile.sh | logger -t seafilebackup.cron -p 6; } 2>&1 | logger -t seafilebackup.cron -p 3"
+        state: "present"
+      become: true # we must use `become` as we are setting `cron` to `root` user
+
+    - name: Schedule a cron job to backup Immich periodically (daily at 5:00)
+      # Manage cron.d and crontab entries
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html
+      #
+      # To check backup logs use:
+      # $ journalctl -r -t immichbackup.cron
+      #
+      ansible.builtin.cron:
+        name: "Backup Immich"
+        disabled: "{{ backup_disable_backups }}"
+        minute: "0"
+        hour: "5"
+        user: root
+        job: "{ cd {{ seafile_db_backup_dir }} && ./backup-immich.sh | logger -t immichbackup.cron -p 6; } 2>&1 | logger -t immichbackup.cron -p 3"
         state: "present"
       become: true # we must use `become` as we are setting `cron` to `root` user

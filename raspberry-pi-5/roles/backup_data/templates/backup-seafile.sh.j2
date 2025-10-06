@@ -16,7 +16,7 @@ echo ""
 echo ""
 echo "-------------------------------------------"
 echo "-------------------------------------------"
-echo "$TIMESTAMPSTART: Backup started"
+echo "$TIMESTAMPSTART: Seafile backup started"
 
 printenv
 
@@ -59,7 +59,7 @@ restic backup \
     /opt/seafile-data/seafile/conf \
     /opt/seafile-data/seafile/seafile-data \
     /opt/seafile-data/seafile/seahub-data \
-    --verbose
+    --verbose --no-scan --skip-if-unchanged --tag seafile
 RESTIC_EXIT_CODE=$?
 
 # To check snapshots run:

@@ -1,0 +1,81 @@
+#! /bin/sh
+
+# Manual:
+# https://docs.immich.app/administration/backup-and-restore
+# https://docs.immich.app/guides/template-backup-script
+#
+# The data files to be backed up:
+# /opt/immich-data/library/backups
+# /opt/immich-data/library/library
+# /opt/immich-data/library/upload
+# /opt/immich-data/library/profile
+
+# for debug purposes uncomment
+# set -x
+
+TIMESTAMPSTART=$(date +%FT%T)
+echo ""
+echo ""
+echo "-------------------------------------------"
+echo "-------------------------------------------"
+echo "$TIMESTAMPSTART: Immich backup started"
+
+printenv
+
+export GOOGLE_PROJECT_ID={{ backup_google_project_id }}
+export GOOGLE_APPLICATION_CREDENTIALS={{ seafile_db_backup_dir }}/service-account-key.json
+export RESTIC_PASSWORD={{ backup_restic_password }}
+export RESTIC_REPOSITORY=gs:{{ backup_google_bucket }}:/
+
+# For the very first time, you'll need to INIT restic backup with:
+# $ sudo -E restic init
+
+restic backup \
+    {{ immich_upload_location }}/backups \
+    {{ immich_upload_location }}/library \
+    {{ immich_upload_location }}/upload \
+    {{ immich_upload_location }}/profile \
+    --verbose --no-scan --skip-if-unchanged  --tag immich
+RESTIC_EXIT_CODE=$?
+
+# To check snapshots run:
+# $ sudo -E restic snapshots
+#
+# To list latest files:
+# $ sudo -E restic ls latest --long
+#
+# Exit status is 0 if the command was successful.
+# Exit status is 1 if there was a fatal error (no snapshot created).
+# Exit status is 3 if some source data could not be read (incomplete snapshot created).
+# 
+
+echo "Checking disk space used"
+
+DISKUSAGEPERCENT=$(df / | tail -1 | awk '{print $5}')
+echo $DISKUSAGEPERCENT
+
+echo "Pushover.net sending notification"
+
+TIMESTAMP=$(date +%FT%T)
+if [ $RESTIC_EXIT_CODE -eq 0 ]; then
+    curl --form-string "token={{ backup_pushover_token }}" \
+         --form-string "user={{ backup_pushover_user }}" \
+         --form-string "priority=-1" \
+         --form-string "message=$TIMESTAMP: Immich backup completed successfully (disk usage: $DISKUSAGEPERCENT)" \
+         https://api.pushover.net/1/messages.json
+
+    echo ""
+    echo "$TIMESTAMP: Backup completed successfully"
+else
+    curl --form-string "token={{ backup_pushover_token }}" \
+         --form-string "user={{ backup_pushover_user }}" \
+         --form-string "priority=1" \
+         --form-string "message=$TIMESTAMP: Some errors occurred during Immich backup - error code: $RESTIC_EXIT_CODE (disk usage: $DISKUSAGEPERCENT)" \
+         https://api.pushover.net/1/messages.json
+
+    echo ""
+    echo "$TIMESTAMP: Some error occurred during Immich backup - error code: $RESTIC_EXIT_CODE"
+    exit 1
+fi
+
+set +x

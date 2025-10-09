@@ -2,7 +2,7 @@
 #
 # https://manual.seafile.com/12.0/administration/backup_recovery/
 #
-- name: Backup Seafile
+- name: Backup data (Seafile and Immich)
   # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
   # similar to exception handling in many programming languages.
   block:
@@ -42,6 +42,33 @@
       ansible.builtin.template:
         src: backup-immich.sh.j2
         dest: "{{ seafile_db_backup_dir }}/backup-immich.sh"
+        mode: "0750"
+      become: true # we must use `become` as `/opt` is only accessible to `root` user
+
+    - name: Copy backup shell script (dot-env.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: dot-env.j2
+        dest: "{{ seafile_db_backup_dir }}/.env"
+        mode: "0640"
+      become: true # we must use `become` as `/opt` is only accessible to `root` user
+
+    - name: Copy backup shell script (restic-snapshots.sh.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: restic-snapshots.sh.j2
+        dest: "{{ seafile_db_backup_dir }}/restic-snapshots.sh"
+        mode: "0750"
+      become: true # we must use `become` as `/opt` is only accessible to `root` user
+
+    - name: Copy backup shell script (restic-ls.sh.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: restic-ls.sh.j2
+        dest: "{{ seafile_db_backup_dir }}/restic-ls.sh"
         mode: "0750"
       become: true # we must use `become` as `/opt` is only accessible to `root` user
 

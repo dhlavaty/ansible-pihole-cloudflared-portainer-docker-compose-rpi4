@@ -1,4 +1,4 @@
-- name: Raspberry Pi 5 setup with Seafile
+- name: Raspberry Pi 5 setup with Seafile and Immich
   hosts: all
   pre_tasks:
     # - name: Log all ansible vars

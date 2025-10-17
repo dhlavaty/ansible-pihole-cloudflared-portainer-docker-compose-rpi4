@@ -35,7 +35,7 @@ restic backup \
     {{ immich_upload_location }}/library \
     {{ immich_upload_location }}/upload \
     {{ immich_upload_location }}/profile \
-    --verbose --no-scan --skip-if-unchanged  --tag immich
+    --verbose --no-scan --skip-if-unchanged --tag immich
 RESTIC_EXIT_CODE=$?
 
 # To check snapshots run:

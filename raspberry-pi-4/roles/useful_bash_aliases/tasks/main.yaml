@@ -16,6 +16,7 @@
           alias tree='find . -type d | sort | sed -e "s/[^-][^\/]*\//   |/g" -e "s/|\([^ ]\)/|-- \/\1/"'
           alias temp="vcgencmd measure_temp"
           alias up="uptime --since"
+          alias dirsizes="du -h --max-depth=1"
           # docker aliases inspired by https://blog.ropnop.com/docker-for-pentesters/
           alias dockerbash="docker run --rm -i -t --entrypoint=/bin/bash"
           alias dockersh="docker run --rm -i -t --entrypoint=/bin/sh"

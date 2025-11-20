@@ -16,7 +16,7 @@ services:
 
   mqtt:
     container_name: mqtt
-    image: eclipse-mosquitto:2.0
+    image: eclipse-mosquitto:2.0.22
     restart: unless-stopped
     volumes:
       - "./mqtt--mosquitto:/mosquitto"
@@ -30,7 +30,7 @@ services:
   zigbee2mqtt:
     container_name: zigbee2mqtt
     restart: unless-stopped
-    image: koenkk/zigbee2mqtt:2.4.0
+    image: koenkk/zigbee2mqtt:2.6.3
     volumes:
       - ./zigbee2mqtt--app-data:/app/data
       - /run/udev:/run/udev:ro

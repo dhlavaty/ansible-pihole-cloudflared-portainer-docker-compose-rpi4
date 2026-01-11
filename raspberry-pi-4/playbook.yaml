@@ -50,6 +50,9 @@
     - name: Docker run Pi-hole
       ansible.builtin.import_tasks: tasks/docker-run-pihole.yaml
 
+    - name: Docker run Pi-hole v6
+      ansible.builtin.import_tasks: tasks/docker-run-pihole-v6.yaml
+
     - name: Docker run Wireguard
       ansible.builtin.import_tasks: tasks/docker-run-wireguard.yaml
 

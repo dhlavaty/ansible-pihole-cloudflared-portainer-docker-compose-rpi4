@@ -35,9 +35,6 @@
     - useful_bash_aliases
 
   tasks:
-    - name: Setup my private GitHub SHMU scraper project
-      ansible.builtin.import_tasks: tasks/shmu-scraper.yaml
-
     - name: Install Tailscale
       ansible.builtin.import_tasks: tasks/install-tailscale.yaml
 
@@ -47,14 +44,8 @@
     - name: Setup auto upgrade of apt packages (unattended-upgrades)
       ansible.builtin.import_tasks: tasks/unattended-upgrades.yaml
 
-    - name: Docker run Pi-hole
-      ansible.builtin.import_tasks: tasks/docker-run-pihole.yaml
-
     - name: Docker run Pi-hole v6
       ansible.builtin.import_tasks: tasks/docker-run-pihole-v6.yaml
-
-    - name: Docker run Wireguard
-      ansible.builtin.import_tasks: tasks/docker-run-wireguard.yaml
 
     - name: Docker run Homeautomation
       ansible.builtin.import_tasks: tasks/docker-run-homeautomation.yaml

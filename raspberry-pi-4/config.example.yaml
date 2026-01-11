@@ -4,11 +4,6 @@ config_dir: "~"
 # This allows 'pi' user to SSH to raspberry4 without password
 pi_ssh_authorized_keys: https://github.com/dhlavaty.keys
 
-shmu_scraper_enable: false
-# Must contain GitHub's "Personal access token" with "admin:public_key" and "repo" scopes
-# See: https://github.com/settings/tokens
-shmu_scraper_github_token: ghp_xxx-censored--censored--censored-xxx
-
 pihole_enable: false
 pihole_password: "abc123"
 
@@ -19,11 +14,6 @@ pihole_password: "abc123"
 netatmo2mqtt_oauth_client_id: ""
 netatmo2mqtt_oauth_client_secret: ""
 netatmo2mqtt_oauth_client_refresh_token: ""
-
-wireguard_enable: false
-wireguard_external_server_url: my-own-domain.duckdns.org
-wireguard_peers_number: 1
-wireguard_port: 51820
 
 backup_enable: false
 backup_dir: "/home/pi/subdir-to-backup/"

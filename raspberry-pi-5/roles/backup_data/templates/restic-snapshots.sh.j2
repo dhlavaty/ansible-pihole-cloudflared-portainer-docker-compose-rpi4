@@ -5,3 +5,10 @@ set -a # automatically export all variables
 set +a
 
 restic snapshots
+
+echo "To keep only last 5 snapshots use:"
+echo ""
+echo "eval \"\$(sudo sed 's/^/export /' .env)\""
+echo "sudo -E restic forget --keep-last 5 --tag immich --dry-run"
+echo "sudo -E restic prune --dry-run"
+echo "sudo -E restic check"

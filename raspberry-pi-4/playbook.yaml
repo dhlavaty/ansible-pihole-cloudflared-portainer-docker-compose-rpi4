@@ -33,6 +33,7 @@
 
   roles:
     - useful_bash_aliases
+    - backup_homedir
 
   tasks:
     - name: Install Tailscale
@@ -52,7 +53,3 @@
 
     - name: Setup auto-reboot at night
       ansible.builtin.import_tasks: tasks/auto-reboot.yaml
-
-    - name: Backup homedir
-      ansible.builtin.import_tasks: tasks/backup-homedir.yaml
-      when: backup_enable

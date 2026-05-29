@@ -4,7 +4,7 @@ services:
   nodered:
     container_name: nodered
     restart: unless-stopped
-    image: nodered/node-red:latest
+    image: nodered/node-red@sha256:524316b9b84cb5bbfe006c117f3dad31ee806804b12e4b866047a65e2080e92d # v3.0.2
     volumes:
       - ./nodered--data:/data
       - /etc/localtime:/etc/localtime:ro
@@ -30,7 +30,7 @@ services:
   zigbee2mqtt:
     container_name: zigbee2mqtt
     restart: unless-stopped
-    image: koenkk/zigbee2mqtt:2.7.2
+    image: koenkk/zigbee2mqtt:2.10.1
     volumes:
       - ./zigbee2mqtt--app-data:/app/data
       - /run/udev:/run/udev:ro

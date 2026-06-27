@@ -59,6 +59,11 @@ echo "Checking disk space used"
 DISKUSAGEPERCENT=$(df / | tail -1 | awk '{print $5}')
 echo $DISKUSAGEPERCENT
 
+echo "Checking latest Immich file"
+
+LATESTFILE=$(find /opt/immich-data/library/upload/80217e23-d83e-4848-a0cd-d4978908f124/ -type f -printf '%T@ %TY-%Tm-%Td %TI:%TM:%.2TS %f\n' | awk '$1 > max {max=$1; line=$0} END {print line}' | cut -d' ' -f2-)
+echo $LATESTFILE
+
 echo "Pushover.net sending notification"
 
 TIMESTAMP=$(date +%FT%T)
@@ -66,7 +71,7 @@ if [ $RESTIC_EXIT_CODE -eq 0 ]; then
     curl --form-string "token={{ backup_pushover_token }}" \
          --form-string "user={{ backup_pushover_user }}" \
          --form-string "priority=-1" \
-         --form-string "message=$TIMESTAMP: Immich backup completed successfully (disk usage: $DISKUSAGEPERCENT)" \
+         --form-string "message=$TIMESTAMP: Immich backup completed successfully (disk usage: $DISKUSAGEPERCENT ; latest: $LATESTFILE)" \
          https://api.pushover.net/1/messages.json
 
     echo ""

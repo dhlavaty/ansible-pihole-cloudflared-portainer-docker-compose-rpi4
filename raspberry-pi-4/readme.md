@@ -57,6 +57,10 @@ nc 1.1.1.1 443
 
 # using curl
 curl -v telnet://1.1.1.1:443
+
+# to properly test UDP against DNS (62.210.38.117 is an example IP address)
+dig @62.210.38.117 . NS +tries=1 +time=4
+# ...should return "connection timed out; no servers could be reached"
 ```
 
 Some DNS settings I've made manually:

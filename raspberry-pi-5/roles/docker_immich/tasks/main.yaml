@@ -41,6 +41,13 @@
         dest: "{{ config_dir }}{{ docker_dir }}{{ immich_dir }}/.env"
         mode: "0640"
 
+    - name: Docker network '{{ caddy_docker_network_name }}'
+      # Manage Docker networks
+      # https://docs.ansible.com/projects/ansible/latest/collections/community/docker/docker_network_module.html
+      community.docker.docker_network:
+        name: "{{ caddy_docker_network_name }}"
+        state: "present"
+
     - name: Run Immich in docker
       # Manage multi-container Docker applications with Docker Compose
       # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_v2_module.html

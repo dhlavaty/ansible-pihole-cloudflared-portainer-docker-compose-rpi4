@@ -13,6 +13,17 @@ docker_dir: "/docker"
 pushover_app_token: 1111122222-REDACTED-5555566666
 pushover_user_key: 1111122222-REDACTED-5555566666
 
+# Caddy HTTPS reverse proxy
+# provides HTTPS and nice URL for services on local network
+# Sub-dir for caddy reverse project. MUST start with slash like '/caddy'
+caddy_dir: "/caddy_https_reverse_proxy"
+caddy_pihole_ip: "192.168.0.1"
+caddy_docker_network_name: "caddy_https_reverse_proxy_network"
+caddy_porkbun_api_key: "pk1_redacted"
+caddy_porkbun_api_secret_key: "sk1_redacted"
+caddy_porkbun_my_domain: "mydomain.com" 
+caddy_porkbun_ssl_email: "name@domain.com" 
+
 # Seafile
 # Sub-dir for seafile project. MUST start with slash like '/seafile'
 seafile_dir: "/seafile"

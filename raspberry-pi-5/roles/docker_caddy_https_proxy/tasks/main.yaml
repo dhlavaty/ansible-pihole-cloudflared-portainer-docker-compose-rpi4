@@ -1,0 +1,66 @@
+# Caddy - HTTPS reverse proxy
+#
+# provides HTTPS and nice URL for services on local network
+# all services needs to run on same docker network
+#
+- name: Install, configure, and start Caddy
+  # Blocks create logical groups of tasks. Blocks also offer ways to handle task errors,
+  # similar to exception handling in many programming languages.
+  block:
+    # We need to create all these folders first so once docker mounts volumes into them,
+    # all files and folders has proper ownership
+    - name: Create directory structure for Caddy
+      # Manage files and file properties
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{ config_dir }}{{ docker_dir }}{{ caddy_dir }}"
+
+    - name: Copy docker-compose (docker-compose-https-proxy.yml.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: "docker-compose-https-proxy.yml.j2"
+        dest: "{{ config_dir }}{{ docker_dir }}{{ caddy_dir }}/docker-compose.yml"
+        mode: "0640"
+
+    - name: Copy .env (dot-env.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: dot-env.j2
+        dest: "{{ config_dir }}{{ docker_dir }}{{ caddy_dir }}/.env"
+        mode: "0640"
+
+    - name: Copy Dockerfile (dockerfile.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: dockerfile.j2
+        dest: "{{ config_dir }}{{ docker_dir }}{{ caddy_dir }}/Dockerfile"
+        mode: "0640"
+
+    - name: Copy Caddyfile (caddyfile.j2)
+      # Template a file out to a target host
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      ansible.builtin.template:
+        src: caddyfile.j2
+        dest: "{{ config_dir }}{{ docker_dir }}{{ caddy_dir }}/Caddyfile"
+        mode: "0640"
+
+    - name: Docker network '{{ caddy_docker_network_name }}'
+      # Manage Docker networks
+      # https://docs.ansible.com/projects/ansible/latest/collections/community/docker/docker_network_module.html
+      community.docker.docker_network:
+        name: "{{ caddy_docker_network_name }}"
+        state: "present"
+
+    - name: Run Caddy HTTPS reverse-proxy in docker
+      # Manage multi-container Docker applications with Docker Compose
+      # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_v2_module.html
+      community.docker.docker_compose_v2:
+        project_src: "{{ config_dir }}{{ docker_dir }}{{ caddy_dir }}/"
+      become: false

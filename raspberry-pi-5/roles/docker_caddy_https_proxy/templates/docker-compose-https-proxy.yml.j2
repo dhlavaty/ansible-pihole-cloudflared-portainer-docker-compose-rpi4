@@ -1,0 +1,44 @@
+services:
+  caddy_reverse_proxy:
+    build: .
+    container_name: caddy_reverse_proxy
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy--data:/data
+      - ./caddy--config:/config
+    # networks:
+    #   - {{ caddy_docker_network_name }}
+    network_mode: "service:net-router"
+    depends_on:
+      - net-router
+
+  # This is a DNAT router
+  # all outbound UDP and TCP traffic from 'caddy_reverse_proxy' targeting port 53 gets redirected to {{caddy_pihole_ip}}:53
+  # we need to do that, so that porkbun.com API doesn't bypass our pihole
+  net-router:
+    image: alpine:3.24.4
+    ports:
+      - "443:443"
+      - "443:443/udp"
+    cap_add:
+      - NET_ADMIN
+    networks:
+      {{ caddy_docker_network_name }}:
+        aliases:
+          - caddy_reverse_proxy
+    # Move any ports previously exposed on my-app here:
+    # ports:
+    #   - "8080:8080"
+    entrypoint: /bin/sh -c
+    command: >
+      "apk add --no-cache iptables &&
+       iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to-destination {{caddy_pihole_ip}}:53 &&
+       iptables -t nat -A OUTPUT -p tcp --dport 53 -j DNAT --to-destination {{caddy_pihole_ip}}:53 &&
+       exec tail -f /dev/null"
+
+networks:
+  {{ caddy_docker_network_name }}:
+    external: true

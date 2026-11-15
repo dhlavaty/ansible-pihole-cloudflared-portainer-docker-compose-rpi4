@@ -1,0 +1,53 @@
+{
+	email {{caddy_porkbun_ssl_email}}
+	# Uses Porkbun DNS-01 globally for the *.example.com wildcard cert
+	acme_dns porkbun {
+		api_key {env.PORKBUN_API_KEY}
+		api_secret_key {env.PORKBUN_API_SECRET_KEY}
+	}
+
+	servers {
+		timeouts {
+			read_body 15m
+			read_header 30s
+			write 15m
+			idle 5m
+		}
+	}
+}
+
+# Reusable snippet combining the 10GB upload cap and 15m upstream timeouts
+(proxy_large) {
+	request_body {
+		max_size 10GB
+	}
+	reverse_proxy {args[0]} {
+		transport http {
+			read_timeout 15m
+			write_timeout 15m
+			response_header_timeout 15m
+		}
+	}
+}
+
+*.{{caddy_porkbun_my_domain}} {
+	@app host photos.{{caddy_porkbun_my_domain}}
+	handle @app {
+		import proxy_large immich_server:2283
+	}
+
+	# @api host api.example.com
+	# handle @api {
+	# 	import proxy_large api:8080
+	# }
+
+	# @test host test.example.com
+	# handle @test {
+	# 	import proxy_large 192.168.1.38:8099
+	# }
+
+	# Reject requests to undefined subdomains instead of returning an empty 200 OK
+	handle {
+		abort
+	}
+}

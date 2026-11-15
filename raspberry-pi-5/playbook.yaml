@@ -49,6 +49,7 @@
     - docker
     - tailscale
     - docker_seafile
+    - docker_caddy_https_proxy
     - docker_immich
     - backup_data
     - auto_reboot

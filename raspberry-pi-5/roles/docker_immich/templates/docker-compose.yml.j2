@@ -74,3 +74,8 @@ services:
 
 volumes:
   model-cache:
+
+networks:
+  default:
+    name: {{ caddy_docker_network_name }}
+    external: true

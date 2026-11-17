@@ -9,35 +9,24 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./caddy--data:/data
       - ./caddy--config:/config
-    # networks:
-    #   - {{ caddy_docker_network_name }}
-    network_mode: "service:net-router"
-    depends_on:
-      - net-router
-
-  # This is a DNAT router
-  # all outbound UDP and TCP traffic from 'caddy_reverse_proxy' targeting port 53 gets redirected to {{caddy_pihole_ip}}:53
-  # we need to do that, so that porkbun.com API doesn't bypass our pihole
-  net-router:
-    image: alpine:3.24.4
     ports:
       - "443:443"
       - "443:443/udp"
-    cap_add:
-      - NET_ADMIN
     networks:
-      {{ caddy_docker_network_name }}:
-        aliases:
-          - caddy_reverse_proxy
-    # Move any ports previously exposed on my-app here:
-    # ports:
-    #   - "8080:8080"
+      - {{ caddy_docker_network_name }}
+    cap_add: # down this line is needed for DNAT to work
+      - NET_ADMIN
     entrypoint: /bin/sh -c
     command: >
-      "apk add --no-cache iptables &&
-       iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to-destination {{caddy_pihole_ip}}:53 &&
-       iptables -t nat -A OUTPUT -p tcp --dport 53 -j DNAT --to-destination {{caddy_pihole_ip}}:53 &&
-       exec tail -f /dev/null"
+      "iptables -t nat -A OUTPUT ! -d 127.0.0.11 -p udp --dport 53 -j DNAT --to-destination {{caddy_pihole_ip}}:53 &&
+       iptables -t nat -A OUTPUT ! -d 127.0.0.11 -p tcp --dport 53 -j DNAT --to-destination {{caddy_pihole_ip}}:53 &&
+       exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
+
+  # DNAT routing explanation:
+  # all outbound UDP and TCP traffic from 'caddy_reverse_proxy' targeting port 53 gets redirected to {{caddy_pihole_ip}}:53
+  # we need to do that, so that porkbun.com API doesn't bypass our pihole
+  # the original caddy's exec can be seen at:
+  # https://github.com/caddyserver/caddy-docker/blob/366249a1b454ae9a22a58e864e47e8fbc19a9586/Dockerfile.tmpl#L63
 
 networks:
   {{ caddy_docker_network_name }}:

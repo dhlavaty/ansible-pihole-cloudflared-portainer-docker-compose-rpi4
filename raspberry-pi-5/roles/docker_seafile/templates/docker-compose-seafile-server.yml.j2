@@ -9,8 +9,6 @@ services:
       - MARIADB_AUTO_UPGRADE=1
     volumes:
       - "${SEAFILE_MYSQL_VOLUME:-/opt/seafile-mysql/db}:/var/lib/mysql"
-    networks:
-      - seafile-net
     healthcheck:
       test:
         [
@@ -30,8 +28,6 @@ services:
     restart: unless-stopped
     container_name: seafile-memcached
     entrypoint: memcached -m 256
-    networks:
-      - seafile-net
 
   seafile:
     image: ${SEAFILE_IMAGE:-seafileltd/seafile-mc:12.0-latest}
@@ -67,9 +63,8 @@ services:
     depends_on:
       - db
       - memcached
-    networks:
-      - seafile-net
 
 networks:
-  seafile-net:
-    name: seafile-net
+  default:
+    name: [: caddy_docker_network_name :] # AWARE: we use different .j2 escape here
+    external: true

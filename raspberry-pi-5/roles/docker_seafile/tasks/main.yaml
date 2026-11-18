@@ -33,14 +33,6 @@
         # - "{{ config_dir }}/docker/immich/db_dumps"
         # - "{{ config_dir }}/docker/immich/pgdumpall_dump"
 
-    - name: Copy docker-compose (docker-compose-caddy.yml.j2)
-      # Template a file out to a target host
-      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
-      ansible.builtin.template:
-        src: "docker-compose-caddy.yml.j2"
-        dest: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/caddy.yml"
-        mode: "0640"
-
     - name: Copy docker-compose (docker-compose-seafile-server.yml.j2)
       # Template a file out to a target host
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
@@ -67,6 +59,5 @@
         project_src: "{{ config_dir }}{{ docker_dir }}{{ seafile_dir }}/"
         files:
           - seafile-server.yml
-          - caddy.yml
         build: "never"
       become: false

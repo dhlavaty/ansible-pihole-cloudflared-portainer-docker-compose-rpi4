@@ -23,6 +23,7 @@ caddy_porkbun_api_key: "pk1_redacted"
 caddy_porkbun_api_secret_key: "sk1_redacted"
 caddy_porkbun_my_domain: "mydomain.com" 
 caddy_porkbun_ssl_email: "name@domain.com" 
+caddy_seafile_domain: "http://my-home-server-withseafile.com"
 
 # Seafile
 # Sub-dir for seafile project. MUST start with slash like '/seafile'
